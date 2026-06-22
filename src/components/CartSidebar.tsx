@@ -6,7 +6,7 @@ import { useState } from 'react';
 export default function CartSidebar() {
   const { isCartOpen, setIsCartOpen, items, updateQuantity, removeFromCart, total, clearCart } = useCart();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
-  const [formData, setFormData] = useState({ cliente: '', telefono: '', notas: '' });
+  const [formData, setFormData] = useState({ cliente: '', telefono: '', direccion: '', notas: '' });
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
   if (!isCartOpen) return null;
@@ -82,9 +82,19 @@ export default function CartSidebar() {
                   style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)' }}
                 />
               </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Teléfono *</label>
+              <div style={{ marginBottom: '1rem' }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 'bold' }}>Teléfono *</label>
                 <input required type="tel" value={formData.telefono} onChange={e => setFormData({...formData, telefono: e.target.value})} style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border)' }} />
+              </div>
+              <div style={{ marginBottom: '1rem' }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 'bold' }}>Dirección de Entrega (Opcional)</label>
+                <input 
+                  type="text" 
+                  placeholder="Calle, Número, Piso (Para envíos a domicilio)"
+                  value={formData.direccion} 
+                  onChange={e => setFormData({...formData, direccion: e.target.value})} 
+                  style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border)' }} 
+                />
               </div>
               <div>
                 <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Notas (opcional)</label>

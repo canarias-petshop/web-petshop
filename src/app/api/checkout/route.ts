@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { items, cliente, telefono, notas } = body;
+    const { items, cliente, telefono, direccion, notas } = body;
 
     if (!items || !items.length || !cliente) {
       return NextResponse.json({ error: 'Faltan datos obligatorios' }, { status: 400 });
@@ -12,6 +12,11 @@ export async function POST(request: Request) {
 
     // Formatear el pedido
     const detalle_pedido = items.map((i: any) => `${i.cantidad}x ${i.nombre}`).join(' + ');
+    
+    let notasFinales = notas || 'Pedido Online';
+    if (direccion) {
+        notasFinales = `Dirección de Entrega: ${direccion} | ` + notasFinales;
+    }
 
     // Verificar si el cliente existe por teléfono o nombre
     if (telefono) {
@@ -26,9 +31,10 @@ export async function POST(request: Request) {
         await supabase.from('clientes').insert({
           nombre_dueno: cliente,
           telefono: telefono,
+          direccion: direccion || '',
           metodo_contacto: 'WhatsApp',
           puntos: 0,
-          servicio_domicilio: false
+          servicio_domicilio: direccion ? true : false
         });
       }
     }
@@ -40,7 +46,7 @@ export async function POST(request: Request) {
         nombre_cliente: cliente,
         telefono: telefono || '',
         detalle_pedido: detalle_pedido,
-        notas: notas || 'Pedido Online',
+        notas: notasFinales,
         estado: 'Pendiente',
         origen: 'Web'
       });
