@@ -11,7 +11,7 @@ export async function POST(request: Request) {
     }
 
     // Formatear el pedido
-    const detalle_pedido = items.map((i: any) => `${i.cantidad}x ${i.nombre}`).join(' + ');
+    const detalle_pedido = items.map((i: { cantidad: number, nombre: string }) => `${i.cantidad}x ${i.nombre}`).join(' + ');
     
     let notasFinales = notas || 'Pedido Online';
     if (direccion) {
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
     }
 
     // Insertar en Supabase
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('encargos_clientes')
       .insert({
         nombre_cliente: cliente,
@@ -57,7 +57,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ success: true });
-  } catch (err) {
+  } catch {
     return NextResponse.json({ error: 'Error procesando la solicitud' }, { status: 500 });
   }
 }

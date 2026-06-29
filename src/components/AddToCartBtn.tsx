@@ -1,8 +1,8 @@
 'use client';
 
-import { useCart } from '@/context/CartContext';
+import { useCart, CartItem } from '@/context/CartContext';
 
-export default function AddToCartBtn({ product }: { product: any }) {
+export default function AddToCartBtn({ product }: { product: Omit<CartItem, 'cantidad'> & { precio_pvp?: number | string } }) {
   const { addToCart } = useCart();
 
   return (

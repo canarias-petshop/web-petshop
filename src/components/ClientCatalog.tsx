@@ -3,8 +3,25 @@
 import { useState, useMemo } from 'react';
 import AddToCartBtn from '@/components/AddToCartBtn';
 
+export type Product = {
+  id: string;
+  nombre: string;
+  marca?: string;
+  gama?: string;
+  subcategoria?: string;
+  familia?: string;
+  mascota?: string;
+  edad?: string;
+  tamano?: string;
+  necesidad_especial?: string;
+  sabor_principal?: string;
+  precio_pvp?: string | number;
+  sku?: string;
+  caracteristicas?: string;
+};
+
 // Componente reutilizable para renderizar cada bloque de checkboxes (Acordeón)
-function FilterSection({ title, options, state, setter, onToggle, defaultExpanded = false }: { title: string, options: string[], state: string[], setter: any, onToggle: (setter: any, value: string) => void, defaultExpanded?: boolean }) {
+function FilterSection({ title, options, state, setter, onToggle, defaultExpanded = false }: { title: string, options: string[], state: string[], setter: React.Dispatch<React.SetStateAction<string[]>>, onToggle: (setter: React.Dispatch<React.SetStateAction<string[]>>, value: string) => void, defaultExpanded?: boolean }) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   
   if (options.length === 0) return null;
@@ -38,14 +55,14 @@ function FilterSection({ title, options, state, setter, onToggle, defaultExpande
 }
 
 // Componente para filtro anidado de marcas
-function BrandFilterSection({ productos, selectedMarcas, setSelectedMarcas, selectedMarcaSubs, setSelectedMarcaSubs }: any) {
+function BrandFilterSection({ productos, selectedMarcas, setSelectedMarcas, selectedMarcaSubs, setSelectedMarcaSubs }: { productos: Product[], selectedMarcas: string[], setSelectedMarcas: React.Dispatch<React.SetStateAction<string[]>>, selectedMarcaSubs: Record<string, string[]>, setSelectedMarcaSubs: React.Dispatch<React.SetStateAction<Record<string, string[]>>> }) {
   const [expandedBrands, setExpandedBrands] = useState<string[]>([]);
   
   // Extract brands and their subcategories
   const brandsObj = useMemo(() => {
     const obj: Record<string, Set<string>> = {};
     for (const p of productos) {
-      if (!p.marca || p.marca === 'Genérico') continue;
+      if (!p.marca || p.marca === 'Genérico' || p.marca === 'Servicio') continue;
       if (!obj[p.marca]) obj[p.marca] = new Set();
       const nestedVal = p.gama || p.subcategoria;
       if (nestedVal) obj[p.marca].add(nestedVal);
@@ -60,11 +77,11 @@ function BrandFilterSection({ productos, selectedMarcas, setSelectedMarcas, sele
     if (selectedMarcas.includes(marca)) {
       setSelectedMarcas((prev: string[]) => prev.filter(m => m !== marca));
       // Optionally clear its subcategories
-      setSelectedMarcaSubs((prev: any) => ({ ...prev, [marca]: [] }));
+      setSelectedMarcaSubs((prev) => ({ ...prev, [marca]: [] }));
     } else {
       setSelectedMarcas((prev: string[]) => [...prev, marca]);
       // Clear its subcategories so the whole brand is selected
-      setSelectedMarcaSubs((prev: any) => ({ ...prev, [marca]: [] }));
+      setSelectedMarcaSubs((prev) => ({ ...prev, [marca]: [] }));
     }
   };
 
@@ -76,7 +93,7 @@ function BrandFilterSection({ productos, selectedMarcas, setSelectedMarcas, sele
     } else {
       newSubs = [...currentSubs, sub];
     }
-    setSelectedMarcaSubs((prev: any) => ({ ...prev, [marca]: newSubs }));
+    setSelectedMarcaSubs((prev) => ({ ...prev, [marca]: newSubs }));
     
     // If a sub is toggled, uncheck the main brand to indicate partial selection
     if (newSubs.length > 0 && selectedMarcas.includes(marca)) {
@@ -139,7 +156,7 @@ function BrandFilterSection({ productos, selectedMarcas, setSelectedMarcas, sele
   );
 }
 
-export default function ClientCatalog({ productos }: { productos: any[] }) {
+export default function ClientCatalog({ productos }: { productos: Product[] }) {
   // Estados para cada filtro
   const [selectedMarcas, setSelectedMarcas] = useState<string[]>([]);
   const [selectedMarcaSubs, setSelectedMarcaSubs] = useState<Record<string, string[]>>({});
@@ -154,8 +171,6 @@ export default function ClientCatalog({ productos }: { productos: any[] }) {
   // Estado para ordenación
   const [sortBy, setSortBy] = useState<string>('alfabetico');
   
-  // Estado para expandir/colapsar el filtro personalizado de Marcas
-  const [marcaExpanded, setMarcaExpanded] = useState(true);
 
   // Listas únicas para construir el menú
   const categorias = useMemo(() => Array.from(new Set(productos.map(p => p.familia).filter(Boolean))).sort(), [productos]);
@@ -166,7 +181,7 @@ export default function ClientCatalog({ productos }: { productos: any[] }) {
   const sabores = useMemo(() => Array.from(new Set(productos.map(p => p.sabor_principal).filter(Boolean))).sort(), [productos]);
 
   // Manejador genérico de toggles
-  const toggle = (setter: any, value: string) => {
+  const toggle = (setter: React.Dispatch<React.SetStateAction<string[]>>, value: string) => {
     setter((prev: string[]) => prev.includes(value) ? prev.filter(x => x !== value) : [...prev, value]);
   };
 
@@ -298,7 +313,7 @@ export default function ClientCatalog({ productos }: { productos: any[] }) {
               </div>
             </div>
             <div className="grid" style={{ padding: 0 }}>
-              {productosFiltrados.map((prod: any) => (
+              {productosFiltrados.map((prod) => (
                 <div key={prod.id} className="card" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', transition: 'transform 0.2s', border: '1px solid var(--border)' }}>
                   
                   {/* Contenedor de Imagen con el SKU correcto */}
@@ -320,7 +335,7 @@ export default function ClientCatalog({ productos }: { productos: any[] }) {
                       backgroundPosition: 'center',
                     }} 
                     />
-                    {prod.marca && prod.marca !== 'Genérico' && (
+                    {prod.marca && prod.marca !== 'Genérico' && prod.marca !== 'Servicio' && (
                        <span style={{ 
                          position: 'absolute', top: '10px', left: '10px', 
                          background: 'var(--primary)', color: 'white', 

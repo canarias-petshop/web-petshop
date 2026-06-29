@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import "./globals.css";
 import ClientProviders from "@/components/ClientProviders";
 import NavbarCart from "@/components/NavbarCart";
@@ -22,7 +23,7 @@ export default function RootLayout({
           <nav className="navbar">
             <div className="container navbar-content">
               <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <img src="/LOGO.jpg" alt="Animalarium" style={{ height: '80px', objectFit: 'contain' }} />
+                <Image src="/LOGO.jpg" alt="Animalarium" width={150} height={80} style={{ objectFit: 'contain' }} />
               </Link>
               <div className="nav-links">
                 <Link href="/catalogo" className="nav-link">Catálogo</Link>

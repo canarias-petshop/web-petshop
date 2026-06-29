@@ -4,7 +4,7 @@ import { useCart } from '@/context/CartContext';
 import { useState } from 'react';
 
 export default function CartSidebar() {
-  const { isCartOpen, setIsCartOpen, items, updateQuantity, removeFromCart, total, clearCart } = useCart();
+  const { isCartOpen, setIsCartOpen, items, updateQuantity, total, clearCart } = useCart();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [formData, setFormData] = useState({ cliente: '', telefono: '', direccion: '', notas: '' });
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -33,7 +33,7 @@ export default function CartSidebar() {
       } else {
         setStatus('error');
       }
-    } catch (err) {
+    } catch {
       setStatus('error');
     }
   };

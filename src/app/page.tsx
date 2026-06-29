@@ -8,7 +8,7 @@ export default function Home() {
           <div className="hero-box">
             <h1 style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>Especialistas en Alimentación Natural</h1>
             <p style={{ margin: '1rem auto 2rem', fontSize: '1.4rem', color: 'var(--primary)', fontWeight: '600', fontStyle: 'italic' }}>
-              "Queremos lo mejor para tu mascota y lo mejor es Animalarium"
+              &quot;Queremos lo mejor para tu mascota y lo mejor es Animalarium&quot;
             </p>
             <Link href="/catalogo" className="btn btn-primary" style={{ padding: '1rem 2rem', fontSize: '1.125rem' }}>
               Ver Catálogo Completo

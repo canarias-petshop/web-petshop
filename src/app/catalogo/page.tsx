@@ -1,7 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import ClientCatalog from '@/components/ClientCatalog';
 
-export const revalidate = 60; // Revalidate cache every 60 seconds
+export const dynamic = 'force-dynamic';
 
 export default async function CatalogoPage() {
   // Fetch products that have a 'familia' (Category) assigned for the Web
