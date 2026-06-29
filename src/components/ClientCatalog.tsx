@@ -62,7 +62,7 @@ function BrandFilterSection({ productos, selectedMarcas, setSelectedMarcas, sele
   const brandsObj = useMemo(() => {
     const obj: Record<string, Set<string>> = {};
     for (const p of productos) {
-      if (!p.marca || p.marca === 'Genérico' || p.marca === 'Servicio') continue;
+      if (!p.marca) continue;
       if (!obj[p.marca]) obj[p.marca] = new Set();
       const nestedVal = p.gama || p.subcategoria;
       if (nestedVal) obj[p.marca].add(nestedVal);
@@ -157,6 +157,47 @@ function BrandFilterSection({ productos, selectedMarcas, setSelectedMarcas, sele
 }
 
 export default function ClientCatalog({ productos }: { productos: Product[] }) {
+  // Aplicar formato a Atlantic Pet y ocultar genéricos/servicios
+  const productosFormateados = useMemo(() => {
+    return productos
+      .filter(p => p.marca !== 'Genérico' && p.marca !== 'Generico' && p.marca !== 'Servicio')
+      .map(p => {
+        let marcaFormateada = p.marca;
+        if (marcaFormateada && marcaFormateada.toLowerCase() === 'atlantic pet') {
+          marcaFormateada = 'ATLANTIC PET';
+        }
+        
+        // Diccionario extendido para subcategorías
+        let subcatFormateada = p.subcategoria;
+        
+        // Normalizamos a minúsculas para facilitar la comparación
+        const lowerSubcat = (subcatFormateada || '').toLowerCase();
+        
+        if (lowerSubcat.includes('pienso seco') || lowerSubcat.includes('alimento seco') || lowerSubcat.includes('alimentación seca')) {
+          subcatFormateada = 'Alimentación seca';
+        } else if (lowerSubcat.includes('húmedo') || lowerSubcat.includes('humedo') || lowerSubcat.includes('pouch') || lowerSubcat.includes('lata')) {
+          subcatFormateada = 'Alimentación húmeda';
+        } else if (lowerSubcat.includes('snack')) {
+          subcatFormateada = 'Snack';
+        }
+        
+        // Si no tiene subcategoría pero sí familia, usamos la familia y la mapeamos si es necesario
+        let catFinal = subcatFormateada || p.familia || 'Otros';
+        const lowerCat = (catFinal).toLowerCase();
+        
+        if (lowerCat.includes('pienso seco') || lowerCat.includes('alimento seco') || lowerCat.includes('alimentación seca')) {
+          catFinal = 'Alimentación seca';
+        } else if (lowerCat.includes('húmedo') || lowerCat.includes('humedo') || lowerCat.includes('pouch') || lowerCat.includes('lata')) {
+          catFinal = 'Alimentación húmeda';
+        } else if (lowerCat.includes('snack')) {
+          catFinal = 'Snack';
+        }
+
+        return { ...p, marca: marcaFormateada, categoria_web: catFinal };
+      });
+  }, [productos]);
+
+  // Usaremos productosFormateados en lugar de productos
   // Estados para cada filtro
   const [selectedMarcas, setSelectedMarcas] = useState<string[]>([]);
   const [selectedMarcaSubs, setSelectedMarcaSubs] = useState<Record<string, string[]>>({});
@@ -173,12 +214,12 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
   
 
   // Listas únicas para construir el menú
-  const categorias = useMemo(() => Array.from(new Set(productos.map(p => p.familia).filter(Boolean))).sort(), [productos]);
-  const mascotas = useMemo(() => Array.from(new Set(productos.map(p => p.mascota).filter(Boolean))).sort(), [productos]);
-  const edades = useMemo(() => Array.from(new Set(productos.map(p => p.edad).filter(Boolean))).sort(), [productos]);
-  const tamanos = useMemo(() => Array.from(new Set(productos.map(p => p.tamano).filter(Boolean))).sort(), [productos]);
-  const necesidades = useMemo(() => Array.from(new Set(productos.map(p => p.necesidad_especial).filter(Boolean))).filter(n => n !== 'Ninguna').sort(), [productos]);
-  const sabores = useMemo(() => Array.from(new Set(productos.map(p => p.sabor_principal).filter(Boolean))).sort(), [productos]);
+  const categorias = useMemo(() => Array.from(new Set(productosFormateados.map(p => p.categoria_web).filter(Boolean))).sort(), [productosFormateados]);
+  const mascotas = useMemo(() => Array.from(new Set(productosFormateados.map(p => p.mascota).filter(Boolean))).sort(), [productosFormateados]);
+  const edades = useMemo(() => Array.from(new Set(productosFormateados.map(p => p.edad).filter(Boolean))).sort(), [productosFormateados]);
+  const tamanos = useMemo(() => Array.from(new Set(productosFormateados.map(p => p.tamano).filter(Boolean))).sort(), [productosFormateados]);
+  const necesidades = useMemo(() => Array.from(new Set(productosFormateados.map(p => p.necesidad_especial).filter(Boolean))).filter(n => n !== 'Ninguna').sort(), [productosFormateados]);
+  const sabores = useMemo(() => Array.from(new Set(productosFormateados.map(p => p.sabor_principal).filter(Boolean))).sort(), [productosFormateados]);
 
   // Manejador genérico de toggles
   const toggle = (setter: React.Dispatch<React.SetStateAction<string[]>>, value: string) => {
@@ -187,14 +228,14 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
 
   // Filtrado y ordenación de productos
   const productosFiltrados = useMemo(() => {
-    const filtered = productos.filter(p => {
+    const filtered = productosFormateados.filter(p => {
       const matchInArray = (arr: string[], val: string) => {
         if (arr.length === 0) return true;
         if (!val) return false;
         return arr.map(s => s.trim().toLowerCase()).includes(val.trim().toLowerCase());
       };
 
-      if (!matchInArray(selectedCategorias, p.familia)) return false;
+      if (!matchInArray(selectedCategorias, p.categoria_web)) return false;
       if (!matchInArray(selectedGamas, p.gama)) return false;
       if (!matchInArray(selectedMascotas, p.mascota)) return false;
       if (!matchInArray(selectedEdades, p.edad)) return false;
@@ -226,9 +267,9 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
       // 'alfabetico' por defecto
       return (a.nombre || '').localeCompare(b.nombre || '');
     });
-  }, [productos, selectedMarcas, selectedMarcaSubs, selectedGamas, selectedCategorias, selectedMascotas, selectedEdades, selectedTamanos, selectedNecesidades, selectedSabores, sortBy]);
+  }, [productosFormateados, selectedMarcas, selectedMarcaSubs, selectedGamas, selectedCategorias, selectedMascotas, selectedEdades, selectedTamanos, selectedNecesidades, selectedSabores, sortBy]);
 
-  if (productos.length === 0) {
+  if (productosFormateados.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '4rem 0', color: 'var(--text-muted)' }}>
         <h2>Aún no hay productos disponibles.</h2>
@@ -268,8 +309,9 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
         <FilterSection title="Necesidad Especial" options={necesidades} state={selectedNecesidades} setter={setSelectedNecesidades} onToggle={toggle} />
         <FilterSection title="Sabor" options={sabores} state={selectedSabores} setter={setSelectedSabores} onToggle={toggle} />
         
+        {/* Filtro Marca y Subcategorías */}
         <BrandFilterSection 
-          productos={productos} 
+          productos={productosFormateados} 
           selectedMarcas={selectedMarcas} 
           setSelectedMarcas={setSelectedMarcas} 
           selectedMarcaSubs={selectedMarcaSubs} 
@@ -335,7 +377,7 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
                       backgroundPosition: 'center',
                     }} 
                     />
-                    {prod.marca && prod.marca !== 'Genérico' && prod.marca !== 'Servicio' && (
+                    {prod.marca && (
                        <span style={{ 
                          position: 'absolute', top: '10px', left: '10px', 
                          background: 'var(--primary)', color: 'white', 

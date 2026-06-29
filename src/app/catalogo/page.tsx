@@ -24,7 +24,7 @@ export default async function CatalogoPage() {
         <p style={{ color: 'var(--text-muted)' }}>Encuentra la mejor alimentación natural para tu mascota.</p>
       </div>
       <section className="container" id="catalogo">
-        <ClientCatalog productos={productos || []} />
+        <ClientCatalog productos={(productos || []).filter(p => p.marca !== 'Genérico' && p.marca !== 'Generico' && p.marca !== 'Servicio')} />
       </section>
     </div>
   );
