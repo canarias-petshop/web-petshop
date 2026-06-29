@@ -162,7 +162,7 @@ export default function ClientCatalog({ productos }: { productos: any[] }) {
   const mascotas = useMemo(() => Array.from(new Set(productos.map(p => p.mascota).filter(Boolean))).sort(), [productos]);
   const edades = useMemo(() => Array.from(new Set(productos.map(p => p.edad).filter(Boolean))).sort(), [productos]);
   const tamanos = useMemo(() => Array.from(new Set(productos.map(p => p.tamano).filter(Boolean))).sort(), [productos]);
-  const necesidades = useMemo(() => Array.from(new Set(productos.map(p => p.necesidad_especial).filter(Boolean))).sort(), [productos]);
+  const necesidades = useMemo(() => Array.from(new Set(productos.map(p => p.necesidad_especial).filter(Boolean))).filter(n => n !== 'Ninguna').sort(), [productos]);
   const sabores = useMemo(() => Array.from(new Set(productos.map(p => p.sabor_principal).filter(Boolean))).sort(), [productos]);
 
   // Manejador genérico de toggles
