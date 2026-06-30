@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { supabase, anonSupabase } from "@/lib/supabase";
 import { LogOut, User, Gift, PawPrint, Calendar, Scissors, Info } from "lucide-react";
 
 export default function MiCuentaPage() {
@@ -22,8 +22,8 @@ export default function MiCuentaPage() {
 
         setUser(user);
 
-        // Fetch client data, pets, and their appointments
-        const { data: clientData, error: clientError } = await supabase
+        // Fetch client data, pets, and their appointments using anon client to bypass RLS issues
+        const { data: clientData, error: clientError } = await anonSupabase
           .from("clientes")
           .select("*, mascotas(*, citas(*))")
           .eq("auth_user_id", user.id)
