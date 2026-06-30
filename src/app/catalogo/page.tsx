@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import ClientCatalog from '@/components/ClientCatalog';
+import PromoBanner from '@/components/PromoBanner';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,14 +19,17 @@ export default async function CatalogoPage() {
   }
 
   return (
-    <div style={{ paddingTop: '2rem', paddingBottom: '4rem' }}>
-      <div className="container" style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '2.5rem', color: 'var(--primary)', marginBottom: '0.5rem' }}>Nuestro Catálogo</h1>
+    <div>
+      <PromoBanner />
+      <div style={{ paddingTop: '2rem', paddingBottom: '4rem' }}>
+        <div className="container" style={{ marginBottom: '2rem' }}>
+          <h1 style={{ fontSize: '2.5rem', color: 'var(--primary)', marginBottom: '0.5rem' }}>Nuestro Catálogo</h1>
         <p style={{ color: 'var(--text-muted)' }}>Encuentra la mejor alimentación natural para tu mascota.</p>
       </div>
       <section className="container" id="catalogo">
         <ClientCatalog productos={(productos || []).filter(p => p.marca !== 'Genérico' && p.marca !== 'Generico' && p.marca !== 'Servicio')} />
       </section>
+      </div>
     </div>
   );
 }

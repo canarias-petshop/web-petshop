@@ -1,8 +1,10 @@
 import Link from 'next/link';
+import PromoBanner from '@/components/PromoBanner';
 
 export default function Home() {
   return (
     <div>
+      <PromoBanner />
       <section className="hero">
         <div className="container">
           <div className="hero-box">
