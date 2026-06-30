@@ -2,6 +2,7 @@ import Link from 'next/link';
 import PromoBanner from '@/components/PromoBanner';
 import { supabase } from '@/lib/supabase';
 import FloatingProductWidget from '@/components/FloatingProductWidget';
+import FeaturedProductsGrid from '@/components/FeaturedProductsGrid';
 
 export const dynamic = 'force-dynamic';
 
@@ -57,6 +58,8 @@ export default async function Home() {
             <Link href="/catalogo" className="btn" style={{ alignSelf: 'flex-start', zIndex: 2, backgroundColor: '#0284c7', color: 'white' }}>Explorar Snacks</Link>
           </div>
         </div>
+        
+        <FeaturedProductsGrid productos={productos || []} />
       </section>
 
       <section className="container" style={{ paddingTop: '5rem', paddingBottom: '5rem' }}>
