@@ -448,7 +448,7 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
                     </div>
                     
                     <div style={{ marginTop: '1rem' }}>
-                      <AddToCartBtn product={{...prod, precio_pvp: finalPrice}} />
+                      <AddToCartBtn product={{...prod, precio: finalPrice, precio_pvp: finalPrice}} />
                     </div>
                   </div>
                 </div>
