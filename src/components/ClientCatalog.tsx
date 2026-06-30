@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import AddToCartBtn from '@/components/AddToCartBtn';
+import { Search, Filter, X } from 'lucide-react';
 
 export type Product = {
   id: string;
@@ -21,7 +22,7 @@ export type Product = {
 };
 
 // Componente reutilizable para renderizar cada bloque de checkboxes (Acordeón)
-function FilterSection({ title, options, state, setter, onToggle, defaultExpanded = false }: { title: string, options: string[], state: string[], setter: React.Dispatch<React.SetStateAction<string[]>>, onToggle: (setter: React.Dispatch<React.SetStateAction<string[]>>, value: string) => void, defaultExpanded?: boolean }) {
+function FilterSection({ title, options, state, setter, onToggle, counts, defaultExpanded = false }: { title: string, options: string[], state: string[], setter: React.Dispatch<React.SetStateAction<string[]>>, onToggle: (setter: React.Dispatch<React.SetStateAction<string[]>>, value: string) => void, counts: Record<string, number>, defaultExpanded?: boolean }) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   
   if (options.length === 0) return null;
@@ -37,17 +38,22 @@ function FilterSection({ title, options, state, setter, onToggle, defaultExpande
       </div>
       {isExpanded && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', marginTop: '0.8rem' }}>
-          {options.map(opt => (
-            <label key={opt} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.9rem' }}>
-              <input 
-                type="checkbox" 
-                checked={state.includes(opt)}
-                onChange={() => onToggle(setter, opt)}
-                style={{ accentColor: 'var(--primary)', width: '16px', height: '16px' }}
-              />
-              <span style={{ color: state.includes(opt) ? 'var(--text)' : 'var(--text-muted)' }}>{opt}</span>
-            </label>
-          ))}
+          {options.map(opt => {
+            const count = counts[opt] || 0;
+            const isSelected = state.includes(opt);
+            if (count === 0 && !isSelected) return null;
+            return (
+              <label key={opt} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.9rem', opacity: count === 0 ? 0.5 : 1 }}>
+                <input 
+                  type="checkbox" 
+                  checked={isSelected}
+                  onChange={() => onToggle(setter, opt)}
+                  style={{ accentColor: 'var(--primary)', width: '16px', height: '16px' }}
+                />
+                <span style={{ color: isSelected ? 'var(--text)' : 'var(--text-muted)' }}>{opt} <span style={{ fontSize: '0.8rem', opacity: 0.7 }}>({count})</span></span>
+              </label>
+            );
+          })}
         </div>
       )}
     </div>
@@ -55,10 +61,9 @@ function FilterSection({ title, options, state, setter, onToggle, defaultExpande
 }
 
 // Componente para filtro anidado de marcas
-function BrandFilterSection({ productos, selectedMarcas, setSelectedMarcas, selectedMarcaSubs, setSelectedMarcaSubs }: { productos: Product[], selectedMarcas: string[], setSelectedMarcas: React.Dispatch<React.SetStateAction<string[]>>, selectedMarcaSubs: Record<string, string[]>, setSelectedMarcaSubs: React.Dispatch<React.SetStateAction<Record<string, string[]>>> }) {
+function BrandFilterSection({ productos, selectedMarcas, setSelectedMarcas, selectedMarcaSubs, setSelectedMarcaSubs, counts }: { productos: Product[], selectedMarcas: string[], setSelectedMarcas: React.Dispatch<React.SetStateAction<string[]>>, selectedMarcaSubs: Record<string, string[]>, setSelectedMarcaSubs: React.Dispatch<React.SetStateAction<Record<string, string[]>>>, counts: Record<string, number> }) {
   const [expandedBrands, setExpandedBrands] = useState<string[]>([]);
   
-  // Extract brands and their subcategories
   const brandsObj = useMemo(() => {
     const obj: Record<string, Set<string>> = {};
     for (const p of productos) {
@@ -76,11 +81,9 @@ function BrandFilterSection({ productos, selectedMarcas, setSelectedMarcas, sele
   const toggleBrand = (marca: string) => {
     if (selectedMarcas.includes(marca)) {
       setSelectedMarcas((prev: string[]) => prev.filter(m => m !== marca));
-      // Optionally clear its subcategories
       setSelectedMarcaSubs((prev) => ({ ...prev, [marca]: [] }));
     } else {
       setSelectedMarcas((prev: string[]) => [...prev, marca]);
-      // Clear its subcategories so the whole brand is selected
       setSelectedMarcaSubs((prev) => ({ ...prev, [marca]: [] }));
     }
   };
@@ -95,14 +98,9 @@ function BrandFilterSection({ productos, selectedMarcas, setSelectedMarcas, sele
     }
     setSelectedMarcaSubs((prev) => ({ ...prev, [marca]: newSubs }));
     
-    // If a sub is toggled, uncheck the main brand to indicate partial selection
     if (newSubs.length > 0 && selectedMarcas.includes(marca)) {
       setSelectedMarcas((prev: string[]) => prev.filter(m => m !== marca));
     }
-  };
-
-  const toggleExpand = (marca: string) => {
-    setExpandedBrands(prev => prev.includes(marca) ? prev.filter(m => m !== marca) : [...prev, marca]);
   };
 
   return (
@@ -114,6 +112,9 @@ function BrandFilterSection({ productos, selectedMarcas, setSelectedMarcas, sele
           const isExpanded = expandedBrands.includes(marca);
           const isBrandChecked = selectedMarcas.includes(marca);
           const activeSubs = selectedMarcaSubs[marca] || [];
+          const count = counts[marca] || 0;
+          
+          if (count === 0 && !isBrandChecked && activeSubs.length === 0) return null;
           
           return (
             <div key={marca} style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
@@ -125,11 +126,11 @@ function BrandFilterSection({ productos, selectedMarcas, setSelectedMarcas, sele
                     onChange={() => toggleBrand(marca)}
                     style={{ accentColor: 'var(--primary)', width: '16px', height: '16px' }}
                   />
-                  <span style={{ color: (isBrandChecked || activeSubs.length > 0) ? 'var(--text)' : 'var(--text-muted)' }}>{marca}</span>
+                  <span style={{ color: (isBrandChecked || activeSubs.length > 0) ? 'var(--text)' : 'var(--text-muted)' }}>{marca} <span style={{ fontSize: '0.8rem', opacity: 0.7 }}>({count})</span></span>
                 </label>
                 {subcats.length > 0 && (
                   <span 
-                    onClick={() => toggleExpand(marca)}
+                    onClick={() => setExpandedBrands(prev => prev.includes(marca) ? prev.filter(m => m !== marca) : [...prev, marca])}
                     style={{ cursor: 'pointer', fontSize: '1.2rem', color: 'var(--text-muted)', lineHeight: '1', padding: '0 5px' }}
                   >
                     {isExpanded ? '−' : '+'}
@@ -137,17 +138,22 @@ function BrandFilterSection({ productos, selectedMarcas, setSelectedMarcas, sele
                 )}
               </div>
               
-              {isExpanded && subcats.map(sub => (
-                <label key={sub} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.85rem', marginLeft: '1.8rem' }}>
-                  <input 
-                    type="checkbox" 
-                    checked={activeSubs.includes(sub as string)}
-                    onChange={() => toggleSub(marca, sub as string)}
-                    style={{ accentColor: 'var(--primary)', width: '14px', height: '14px' }}
-                  />
-                  <span style={{ color: activeSubs.includes(sub as string) ? 'var(--text)' : 'var(--text-muted)' }}>{sub as string}</span>
-                </label>
-              ))}
+              {isExpanded && subcats.map(sub => {
+                const subCount = counts[sub as string] || 0;
+                const isSubChecked = activeSubs.includes(sub as string);
+                if (subCount === 0 && !isSubChecked) return null;
+                return (
+                  <label key={sub} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.85rem', marginLeft: '1.8rem' }}>
+                    <input 
+                      type="checkbox" 
+                      checked={isSubChecked}
+                      onChange={() => toggleSub(marca, sub as string)}
+                      style={{ accentColor: 'var(--primary)', width: '14px', height: '14px' }}
+                    />
+                    <span style={{ color: isSubChecked ? 'var(--text)' : 'var(--text-muted)' }}>{sub as string} <span style={{ fontSize: '0.8rem', opacity: 0.7 }}>({subCount})</span></span>
+                  </label>
+                );
+              })}
             </div>
           );
         })}
@@ -157,7 +163,9 @@ function BrandFilterSection({ productos, selectedMarcas, setSelectedMarcas, sele
 }
 
 export default function ClientCatalog({ productos }: { productos: Product[] }) {
-  // Aplicar formato a Atlantic Pet y ocultar genéricos/servicios
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+
   const productosFormateados = useMemo(() => {
     return productos
       .filter(p => p.marca !== 'Genérico' && p.marca !== 'Generico' && p.marca !== 'Servicio')
@@ -167,10 +175,7 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
           marcaFormateada = 'ATLANTIC PET';
         }
         
-        // Diccionario extendido para subcategorías
         let subcatFormateada = p.subcategoria;
-        
-        // Normalizamos a minúsculas para facilitar la comparación
         const lowerSubcat = (subcatFormateada || '').toLowerCase();
         
         if (lowerSubcat.includes('pienso seco') || lowerSubcat.includes('alimento seco') || lowerSubcat.includes('alimentación seca')) {
@@ -181,7 +186,6 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
           subcatFormateada = 'Snack';
         }
         
-        // Si no tiene subcategoría pero sí familia, usamos la familia y la mapeamos si es necesario
         let catFinal = subcatFormateada || p.familia || 'Otros';
         const lowerCat = (catFinal).toLowerCase();
         
@@ -198,8 +202,6 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
       .filter(p => p.categoria_web === 'Alimentación seca' || p.categoria_web === 'Alimentación húmeda' || p.categoria_web === 'Snack');
   }, [productos]);
 
-  // Usaremos productosFormateados en lugar de productos
-  // Estados para cada filtro
   const [selectedMarcas, setSelectedMarcas] = useState<string[]>([]);
   const [selectedMarcaSubs, setSelectedMarcaSubs] = useState<Record<string, string[]>>({});
   const [selectedGamas, setSelectedGamas] = useState<string[]>([]);
@@ -210,11 +212,8 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
   const [selectedNecesidades, setSelectedNecesidades] = useState<string[]>([]);
   const [selectedSabores, setSelectedSabores] = useState<string[]>([]);
   
-  // Estado para ordenación
   const [sortBy, setSortBy] = useState<string>('alfabetico');
   
-
-  // Listas únicas para construir el menú
   const categorias = useMemo(() => (Array.from(new Set(productosFormateados.map(p => p.categoria_web).filter(Boolean))) as string[]).sort(), [productosFormateados]);
   const mascotas = useMemo(() => (Array.from(new Set(productosFormateados.map(p => p.mascota).filter(Boolean))) as string[]).sort(), [productosFormateados]);
   const edades = useMemo(() => (Array.from(new Set(productosFormateados.map(p => p.edad).filter(Boolean))) as string[]).sort(), [productosFormateados]);
@@ -222,12 +221,69 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
   const necesidades = useMemo(() => (Array.from(new Set(productosFormateados.map(p => p.necesidad_especial).filter(Boolean))) as string[]).filter(n => n !== 'Ninguna').sort(), [productosFormateados]);
   const sabores = useMemo(() => (Array.from(new Set(productosFormateados.map(p => p.sabor_principal).filter(Boolean))) as string[]).sort(), [productosFormateados]);
 
-  // Manejador genérico de toggles
   const toggle = (setter: React.Dispatch<React.SetStateAction<string[]>>, value: string) => {
     setter((prev: string[]) => prev.includes(value) ? prev.filter(x => x !== value) : [...prev, value]);
   };
 
-  // Filtrado y ordenación de productos
+  // Función para obtener cuentas reactivas omitiendo una categoría concreta
+  const getCounts = (skipCategory: string) => {
+    return productosFormateados.filter(p => {
+      const matchInArray = (arr: string[], val?: string) => {
+        if (arr.length === 0) return true;
+        if (!val) return false;
+        return arr.map(s => s.trim().toLowerCase()).includes(val.trim().toLowerCase());
+      };
+
+      if (skipCategory !== 'categoria' && !matchInArray(selectedCategorias, p.categoria_web)) return false;
+      if (skipCategory !== 'mascota' && !matchInArray(selectedMascotas, p.mascota)) return false;
+      if (skipCategory !== 'edad' && !matchInArray(selectedEdades, p.edad)) return false;
+      if (skipCategory !== 'tamano' && !matchInArray(selectedTamanos, p.tamano)) return false;
+      if (skipCategory !== 'necesidad' && !matchInArray(selectedNecesidades, p.necesidad_especial)) return false;
+      if (skipCategory !== 'sabor' && !matchInArray(selectedSabores, p.sabor_principal)) return false;
+      
+      if (skipCategory !== 'marca') {
+        const brandHasAnySelection = selectedMarcas.length > 0 || Object.values(selectedMarcaSubs).some(arr => arr.length > 0);
+        if (brandHasAnySelection) {
+          const subsForThisBrand = p.marca ? (selectedMarcaSubs[p.marca] || []) : [];
+          const nestedVal = p.gama || p.subcategoria;
+          if (p.marca && selectedMarcas.includes(p.marca) && subsForThisBrand.length === 0) {
+          } else if (nestedVal && subsForThisBrand.includes(nestedVal)) {
+          } else {
+            return false;
+          }
+        }
+      }
+      
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        if (!p.nombre?.toLowerCase().includes(query) && !p.sku?.toLowerCase().includes(query) && !p.marca?.toLowerCase().includes(query)) return false;
+      }
+      
+      return true;
+    }).reduce((acc, p) => {
+      if (skipCategory === 'categoria' && p.categoria_web) acc[p.categoria_web] = (acc[p.categoria_web] || 0) + 1;
+      if (skipCategory === 'mascota' && p.mascota) acc[p.mascota] = (acc[p.mascota] || 0) + 1;
+      if (skipCategory === 'edad' && p.edad) acc[p.edad] = (acc[p.edad] || 0) + 1;
+      if (skipCategory === 'tamano' && p.tamano) acc[p.tamano] = (acc[p.tamano] || 0) + 1;
+      if (skipCategory === 'necesidad' && p.necesidad_especial) acc[p.necesidad_especial] = (acc[p.necesidad_especial] || 0) + 1;
+      if (skipCategory === 'sabor' && p.sabor_principal) acc[p.sabor_principal] = (acc[p.sabor_principal] || 0) + 1;
+      if (skipCategory === 'marca' && p.marca) {
+        acc[p.marca] = (acc[p.marca] || 0) + 1;
+        const nestedVal = p.gama || p.subcategoria;
+        if (nestedVal) acc[nestedVal] = (acc[nestedVal] || 0) + 1;
+      }
+      return acc;
+    }, {} as Record<string, number>);
+  };
+
+  const countsCategoria = useMemo(() => getCounts('categoria'), [productosFormateados, selectedMarcas, selectedMarcaSubs, selectedCategorias, selectedMascotas, selectedEdades, selectedTamanos, selectedNecesidades, selectedSabores, searchQuery]);
+  const countsMascota = useMemo(() => getCounts('mascota'), [productosFormateados, selectedMarcas, selectedMarcaSubs, selectedCategorias, selectedMascotas, selectedEdades, selectedTamanos, selectedNecesidades, selectedSabores, searchQuery]);
+  const countsEdad = useMemo(() => getCounts('edad'), [productosFormateados, selectedMarcas, selectedMarcaSubs, selectedCategorias, selectedMascotas, selectedEdades, selectedTamanos, selectedNecesidades, selectedSabores, searchQuery]);
+  const countsTamano = useMemo(() => getCounts('tamano'), [productosFormateados, selectedMarcas, selectedMarcaSubs, selectedCategorias, selectedMascotas, selectedEdades, selectedTamanos, selectedNecesidades, selectedSabores, searchQuery]);
+  const countsNecesidad = useMemo(() => getCounts('necesidad'), [productosFormateados, selectedMarcas, selectedMarcaSubs, selectedCategorias, selectedMascotas, selectedEdades, selectedTamanos, selectedNecesidades, selectedSabores, searchQuery]);
+  const countsSabor = useMemo(() => getCounts('sabor'), [productosFormateados, selectedMarcas, selectedMarcaSubs, selectedCategorias, selectedMascotas, selectedEdades, selectedTamanos, selectedNecesidades, selectedSabores, searchQuery]);
+  const countsMarca = useMemo(() => getCounts('marca'), [productosFormateados, selectedMarcas, selectedMarcaSubs, selectedCategorias, selectedMascotas, selectedEdades, selectedTamanos, selectedNecesidades, selectedSabores, searchQuery]);
+
   const productosFiltrados = useMemo(() => {
     const filtered = productosFormateados.filter(p => {
       const matchInArray = (arr: string[], val?: string) => {
@@ -237,25 +293,26 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
       };
 
       if (!matchInArray(selectedCategorias, p.categoria_web)) return false;
-      if (!matchInArray(selectedGamas, p.gama)) return false;
       if (!matchInArray(selectedMascotas, p.mascota)) return false;
       if (!matchInArray(selectedEdades, p.edad)) return false;
       if (!matchInArray(selectedTamanos, p.tamano)) return false;
       if (!matchInArray(selectedNecesidades, p.necesidad_especial)) return false;
       if (!matchInArray(selectedSabores, p.sabor_principal)) return false;
       
-      // Lógica anidada para Marca y Subcategoría (Pestañas/Desplegable)
       const brandHasAnySelection = selectedMarcas.length > 0 || Object.values(selectedMarcaSubs).some(arr => arr.length > 0);
       if (brandHasAnySelection) {
         const subsForThisBrand = p.marca ? (selectedMarcaSubs[p.marca] || []) : [];
         const nestedVal = p.gama || p.subcategoria;
         if (p.marca && selectedMarcas.includes(p.marca) && subsForThisBrand.length === 0) {
-          // Brand selected entirely
         } else if (nestedVal && subsForThisBrand.includes(nestedVal)) {
-          // Specific subcategory selected
         } else {
           return false;
         }
+      }
+      
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        if (!p.nombre?.toLowerCase().includes(query) && !p.sku?.toLowerCase().includes(query) && !p.marca?.toLowerCase().includes(query)) return false;
       }
       
       return true;
@@ -265,10 +322,9 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
       if (sortBy === 'precio_asc') return (Number(a.precio_pvp) || 0) - (Number(b.precio_pvp) || 0);
       if (sortBy === 'precio_desc') return (Number(b.precio_pvp) || 0) - (Number(a.precio_pvp) || 0);
       if (sortBy === 'sabor') return (a.sabor_principal || '').localeCompare(b.sabor_principal || '');
-      // 'alfabetico' por defecto
       return (a.nombre || '').localeCompare(b.nombre || '');
     });
-  }, [productosFormateados, selectedMarcas, selectedMarcaSubs, selectedGamas, selectedCategorias, selectedMascotas, selectedEdades, selectedTamanos, selectedNecesidades, selectedSabores, sortBy]);
+  }, [productosFormateados, selectedMarcas, selectedMarcaSubs, selectedCategorias, selectedMascotas, selectedEdades, selectedTamanos, selectedNecesidades, selectedSabores, sortBy, searchQuery]);
 
   if (productosFormateados.length === 0) {
     return (
@@ -280,139 +336,131 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
   }
 
   return (
-    <div style={{ display: 'flex', gap: '2rem', alignItems: 'flex-start', position: 'relative' }}>
+    <div className="catalog-layout">
       
-      {/* Sidebar de Filtros Moderno */}
-      <aside style={{ 
-        width: '260px', flexShrink: 0, position: 'sticky', top: '20px', 
-        backgroundColor: 'var(--surface)', padding: '1.5rem', 
-        borderRadius: 'var(--radius)', border: '1px solid var(--border)',
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
-        maxHeight: 'calc(100vh - 40px)', overflowY: 'auto'
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border)' }}>
+      {/* Botón flotante para móvil */}
+      <button 
+        className="mobile-filter-btn btn btn-primary"
+        onClick={() => setIsMobileFiltersOpen(true)}
+        style={{ display: 'none', marginBottom: '1rem', width: '100%', justifyContent: 'center', gap: '0.5rem' }}
+      >
+        <Filter size={18} /> Filtros y Búsqueda
+      </button>
+
+      {/* Sidebar de Filtros */}
+      <aside className={`catalog-sidebar ${isMobileFiltersOpen ? 'open' : ''}`}>
+        <div className="sidebar-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border)' }}>
           <h3 style={{ margin: 0, fontSize: '1.2rem' }}>Filtros</h3>
-          <button 
-            onClick={() => {
-              setSelectedMarcas([]); setSelectedMarcaSubs({}); setSelectedGamas([]); setSelectedCategorias([]); setSelectedMascotas([]);
-              setSelectedEdades([]); setSelectedTamanos([]); setSelectedNecesidades([]); setSelectedSabores([]);
-            }}
-            style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', fontSize: '0.8rem', textDecoration: 'underline' }}
-          >
-            Limpiar todo
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <button 
+              onClick={() => {
+                setSelectedMarcas([]); setSelectedMarcaSubs({}); setSelectedGamas([]); setSelectedCategorias([]); setSelectedMascotas([]);
+                setSelectedEdades([]); setSelectedTamanos([]); setSelectedNecesidades([]); setSelectedSabores([]); setSearchQuery('');
+              }}
+              style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', fontSize: '0.8rem', textDecoration: 'underline' }}
+            >
+              Limpiar
+            </button>
+            <button className="mobile-close-btn" onClick={() => setIsMobileFiltersOpen(false)} style={{ display: 'none', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text)' }}>
+              <X size={24} />
+            </button>
+          </div>
         </div>
         
-        <FilterSection title="Mascota" options={mascotas} state={selectedMascotas} setter={setSelectedMascotas} onToggle={toggle} defaultExpanded={true} />
-        <FilterSection title="Categoría" options={categorias} state={selectedCategorias} setter={setSelectedCategorias} onToggle={toggle} defaultExpanded={true} />
-        <FilterSection title="Edad" options={edades} state={selectedEdades} setter={setSelectedEdades} onToggle={toggle} />
-        <FilterSection title="Tamaño" options={tamanos} state={selectedTamanos} setter={setSelectedTamanos} onToggle={toggle} />
-        <FilterSection title="Necesidad Especial" options={necesidades} state={selectedNecesidades} setter={setSelectedNecesidades} onToggle={toggle} />
-        <FilterSection title="Sabor" options={sabores} state={selectedSabores} setter={setSelectedSabores} onToggle={toggle} />
+        <FilterSection title="Mascota" options={mascotas} state={selectedMascotas} setter={setSelectedMascotas} onToggle={toggle} counts={countsMascota} defaultExpanded={true} />
+        <FilterSection title="Categoría" options={categorias} state={selectedCategorias} setter={setSelectedCategorias} onToggle={toggle} counts={countsCategoria} defaultExpanded={true} />
+        <FilterSection title="Edad" options={edades} state={selectedEdades} setter={setSelectedEdades} onToggle={toggle} counts={countsEdad} />
+        <FilterSection title="Tamaño" options={tamanos} state={selectedTamanos} setter={setSelectedTamanos} onToggle={toggle} counts={countsTamano} />
+        <FilterSection title="Necesidad Especial" options={necesidades} state={selectedNecesidades} setter={setSelectedNecesidades} onToggle={toggle} counts={countsNecesidad} />
+        <FilterSection title="Sabor" options={sabores} state={selectedSabores} setter={setSelectedSabores} onToggle={toggle} counts={countsSabor} />
         
-        {/* Filtro Marca y Subcategorías */}
         <BrandFilterSection 
           productos={productosFormateados} 
           selectedMarcas={selectedMarcas} 
           setSelectedMarcas={setSelectedMarcas} 
           selectedMarcaSubs={selectedMarcaSubs} 
           setSelectedMarcaSubs={setSelectedMarcaSubs} 
+          counts={countsMarca}
         />
       </aside>
 
-      {/* Grid de Productos Moderno */}
-      <div style={{ flexGrow: 1 }}>
+      {/* Grid de Productos */}
+      <div style={{ flexGrow: 1, minWidth: 0 }}>
+        <div className="catalog-top-bar" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', gap: '1rem' }}>
+          
+          <div style={{ position: 'relative', flexGrow: 1, maxWidth: '500px' }}>
+            <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+            <input 
+              type="text" 
+              placeholder="Buscar productos, marca, referencia..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{ width: '100%', padding: '0.85rem 1rem 0.85rem 2.5rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)', outline: 'none', fontSize: '1rem', boxShadow: 'var(--shadow-sm)' }}
+            />
+            {searchQuery && (
+              <X size={16} onClick={() => setSearchQuery('')} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', cursor: 'pointer' }} />
+            )}
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+            <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>Ordenar por:</span>
+            <select 
+              value={sortBy} 
+              onChange={(e) => setSortBy(e.target.value)}
+              style={{ padding: '0.75rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)', backgroundColor: 'var(--surface)', color: 'var(--text)', cursor: 'pointer', outline: 'none', boxShadow: 'var(--shadow-sm)' }}
+            >
+              <option value="alfabetico">Alfabético (A-Z)</option>
+              <option value="sabor">Proteína / Sabor</option>
+              <option value="precio_asc">Precio (Menor a Mayor)</option>
+              <option value="precio_desc">Precio (Mayor a Menor)</option>
+            </select>
+          </div>
+        </div>
+
         {productosFiltrados.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '4rem', background: 'var(--surface)', borderRadius: 'var(--radius)', border: '1px dashed var(--border)' }}>
-            <h3 style={{ marginBottom: '1rem' }}>No hay productos que coincidan con estos filtros</h3>
-            <p style={{ color: 'var(--text-muted)' }}>Prueba a quitar alguna selección.</p>
+            <h3 style={{ marginBottom: '1rem' }}>No hay productos que coincidan con tu búsqueda</h3>
+            <p style={{ color: 'var(--text-muted)' }}>Prueba a usar palabras diferentes o quitar filtros.</p>
           </div>
         ) : (
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <div style={{ color: 'var(--text-muted)' }}>
-                Mostrando {productosFiltrados.length} resultados
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
-                <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Ordenar por:</span>
-                <select 
-                  value={sortBy} 
-                  onChange={(e) => setSortBy(e.target.value)}
-                  style={{ 
-                    padding: '0.5rem', 
-                    borderRadius: 'var(--radius)', 
-                    border: '1px solid var(--border)', 
-                    backgroundColor: 'var(--surface)', 
-                    color: 'var(--text)',
-                    cursor: 'pointer',
-                    outline: 'none'
-                  }}
-                >
-                  <option value="alfabetico">Alfabético (A-Z)</option>
-                  <option value="sabor">Proteína / Sabor</option>
-                  <option value="precio_asc">Precio (Menor a Mayor)</option>
-                  <option value="precio_desc">Precio (Mayor a Menor)</option>
-                </select>
-              </div>
+            <div style={{ color: 'var(--text-muted)', marginBottom: '1rem', fontSize: '0.95rem' }}>
+              Mostrando {productosFiltrados.length} resultados
             </div>
             <div className="grid" style={{ padding: 0 }}>
               {productosFiltrados.map((prod) => {
                 const isCaja = prod.nombre?.toLowerCase().includes('caja');
                 const originalPrice = Number(prod.precio_pvp) || 0;
-                // Calculamos un 7% de descuento si es caja
                 const finalPrice = isCaja ? originalPrice * 0.93 : originalPrice;
 
                 return (
                 <div key={prod.id} className="card" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', transition: 'transform 0.2s', border: '1px solid var(--border)' }}>
                   
-                  {/* Contenedor de Imagen con el SKU correcto */}
-                  <div style={{ 
-                    position: 'relative',
-                    height: '220px', 
-                    padding: '1rem',
-                    backgroundColor: '#ffffff',
-                    borderBottom: '1px solid var(--surface-hover)'
-                  }}>
+                  <div style={{ position: 'relative', height: '220px', padding: '1rem', backgroundColor: '#ffffff', borderBottom: '1px solid var(--surface-hover)' }}>
                     <div style={{
-                      width: '100%',
-                      height: '100%',
+                      width: '100%', height: '100%',
                       backgroundImage: prod.sku 
                         ? `url("/images/productos/${encodeURIComponent(prod.sku)}.jpg"), url("/placeholder.png")` 
                         : `url("/placeholder.png")`, 
-                      backgroundSize: 'contain', 
-                      backgroundRepeat: 'no-repeat', 
-                      backgroundPosition: 'center',
-                    }} 
-                    />
+                      backgroundSize: 'contain', backgroundRepeat: 'no-repeat', backgroundPosition: 'center',
+                    }} />
                     {prod.marca && (
-                       <span style={{ 
-                         position: 'absolute', top: '10px', left: '10px', 
-                         background: 'var(--primary)', color: 'white', 
-                         padding: '2px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold'
-                       }}>
+                       <span style={{ position: 'absolute', top: '10px', left: '10px', background: 'var(--primary)', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold' }}>
                          {prod.marca}
                        </span>
                     )}
-                    {/* Badge 10% Descuento para Cajas */}
                     {isCaja && (
-                       <span style={{ 
-                         position: 'absolute', top: '10px', right: '10px', 
-                         background: '#e74c3c', color: 'white', 
-                         padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold',
-                         boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-                       }}>
+                       <span style={{ position: 'absolute', top: '10px', right: '10px', background: '#e74c3c', color: 'white', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
                          -7% DTO. CAJA
                        </span>
                     )}
                   </div>
 
-                  {/* Info del Producto */}
                   <div className="card-content" style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, padding: '1.25rem' }}>
                     <div className="card-title" style={{ fontSize: '1rem', lineHeight: '1.3', marginBottom: '0.5rem', fontWeight: '600' }}>
                       {prod.nombre}
                     </div>
                     
-                    {/* Tags (Edad, Tamaño, Sabor...) */}
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '1rem' }}>
                       {prod.mascota && <span style={{fontSize: '0.7rem', padding: '2px 6px', background: 'var(--surface-hover)', borderRadius: '4px'}}>{prod.mascota}</span>}
                       {prod.gama && <span style={{fontSize: '0.7rem', padding: '2px 6px', background: 'var(--surface-hover)', borderRadius: '4px', border: '1px solid var(--border)'}}>{prod.gama}</span>}
@@ -420,7 +468,6 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
                       {prod.necesidad_especial && prod.necesidad_especial !== 'Ninguna' && <span style={{fontSize: '0.7rem', padding: '2px 6px', background: 'var(--surface-hover)', borderRadius: '4px', color: 'var(--primary)'}}>{prod.necesidad_especial}</span>}
                     </div>
 
-                    {/* Características Extra y Referencia */}
                     <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1rem', lineHeight: '1.4', flexGrow: 1 }}>
                       {prod.caracteristicas && (
                         <div style={{ marginBottom: '0.5rem' }}>
