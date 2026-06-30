@@ -40,11 +40,35 @@ export default function CartSidebar() {
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {items.map(item => (
+              {items.map(item => {
+                const isCaja = item.nombre?.toLowerCase().includes('caja');
+                const originalPrice = isCaja ? item.precio / 0.9 : item.precio;
+                return (
                 <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '1rem', borderBottom: '1px solid var(--border)' }}>
                   <div style={{ flex: 1, paddingRight: '1rem' }}>
-                    <div style={{ fontWeight: 500 }}>{item.nombre}</div>
-                    <div style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>{item.precio.toFixed(2)} €</div>
+                    <div style={{ fontWeight: 500 }}>
+                      {item.nombre}
+                      {isCaja && (
+                        <span style={{ 
+                          display: 'inline-block',
+                          marginLeft: '8px',
+                          background: '#e74c3c', color: 'white', 
+                          padding: '2px 6px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 'bold'
+                        }}>
+                          -10% DTO.
+                        </span>
+                      )}
+                    </div>
+                    <div style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginTop: '0.3rem' }}>
+                      {isCaja && (
+                        <span style={{ textDecoration: 'line-through', marginRight: '6px', fontSize: '0.8rem', opacity: 0.7 }}>
+                          {originalPrice.toFixed(2)} €
+                        </span>
+                      )}
+                      <span style={{ color: isCaja ? '#e74c3c' : 'inherit', fontWeight: isCaja ? 'bold' : 'normal' }}>
+                        {item.precio.toFixed(2)} €
+                      </span>
+                    </div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <button onClick={() => updateQuantity(item.id, item.cantidad - 1)} style={{ width: '28px', height: '28px', borderRadius: '4px', border: '1px solid var(--border)', background: 'var(--background)', cursor: 'pointer' }}>-</button>
