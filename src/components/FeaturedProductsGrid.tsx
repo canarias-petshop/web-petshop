@@ -24,9 +24,9 @@ export default function FeaturedProductsGrid({ productos }: { productos: any[] }
 
     if (piensos.length === 0) return;
 
-    // Shuffle array and take 4
+    // Shuffle array and take 6
     const shuffled = [...piensos].sort(() => 0.5 - Math.random());
-    setFeatured(shuffled.slice(0, 4));
+    setFeatured(shuffled.slice(0, 6));
   }, [productos]);
 
   if (featured.length === 0) return null;
