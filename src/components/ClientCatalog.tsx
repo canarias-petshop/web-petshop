@@ -356,7 +356,13 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
               </div>
             </div>
             <div className="grid" style={{ padding: 0 }}>
-              {productosFiltrados.map((prod) => (
+              {productosFiltrados.map((prod) => {
+                const isCaja = prod.nombre?.toLowerCase().includes('caja');
+                const originalPrice = Number(prod.precio_pvp) || 0;
+                // Calculamos un 10% de descuento si es caja
+                const finalPrice = isCaja ? originalPrice * 0.90 : originalPrice;
+
+                return (
                 <div key={prod.id} className="card" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', transition: 'transform 0.2s', border: '1px solid var(--border)' }}>
                   
                   {/* Contenedor de Imagen con el SKU correcto */}
@@ -385,6 +391,17 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
                          padding: '2px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold'
                        }}>
                          {prod.marca}
+                       </span>
+                    )}
+                    {/* Badge 10% Descuento para Cajas */}
+                    {isCaja && (
+                       <span style={{ 
+                         position: 'absolute', top: '10px', right: '10px', 
+                         background: '#e74c3c', color: 'white', 
+                         padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold',
+                         boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                       }}>
+                         -10% DTO. CAJA
                        </span>
                     )}
                   </div>
@@ -418,17 +435,25 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
                     </div>
 
                     <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <div className="card-price" style={{ fontSize: '1.4rem', fontWeight: '800', color: 'var(--text)' }}>
-                        {prod.precio_pvp ? Number(prod.precio_pvp).toFixed(2) : '0.00'} €
+                      <div className="card-price" style={{ display: 'flex', flexDirection: 'column' }}>
+                        {isCaja && (
+                           <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textDecoration: 'line-through' }}>
+                             {originalPrice.toFixed(2)} €
+                           </span>
+                        )}
+                        <span style={{ fontSize: '1.4rem', fontWeight: '800', color: isCaja ? '#e74c3c' : 'var(--text)' }}>
+                          {finalPrice.toFixed(2)} €
+                        </span>
                       </div>
                     </div>
                     
                     <div style={{ marginTop: '1rem' }}>
-                      <AddToCartBtn product={{...prod, precio: Number(prod.precio_pvp) || 0}} />
+                      <AddToCartBtn product={{...prod, precio_pvp: finalPrice}} />
                     </div>
                   </div>
                 </div>
-              ))}
+              );
+            })}
             </div>
           </div>
         )}
