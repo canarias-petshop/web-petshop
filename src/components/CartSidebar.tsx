@@ -1,42 +1,13 @@
 'use client';
 
 import { useCart } from '@/context/CartContext';
-import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function CartSidebar() {
-  const { isCartOpen, setIsCartOpen, items, updateQuantity, total, clearCart } = useCart();
-  const [isCheckingOut, setIsCheckingOut] = useState(false);
-  const [formData, setFormData] = useState({ cliente: '', telefono: '', direccion: '', notas: '' });
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const { isCartOpen, setIsCartOpen, items, updateQuantity, total } = useCart();
+  const router = useRouter();
 
   if (!isCartOpen) return null;
-
-  const handleCheckout = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setStatus('loading');
-    
-    try {
-      const res = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items, ...formData })
-      });
-      
-      if (res.ok) {
-        setStatus('success');
-        clearCart();
-        setTimeout(() => {
-          setIsCartOpen(false);
-          setStatus('idle');
-          setIsCheckingOut(false);
-        }, 3000);
-      } else {
-        setStatus('error');
-      }
-    } catch {
-      setStatus('error');
-    }
-  };
 
   return (
     <>
@@ -58,51 +29,12 @@ export default function CartSidebar() {
         }}
       >
         <div style={{ padding: '1.5rem', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 600 }}>{isCheckingOut ? 'Finalizar Pedido' : 'Tu Carrito'}</h2>
+          <h2 style={{ fontSize: '1.5rem', fontWeight: 600 }}>Tu Carrito</h2>
           <button onClick={() => setIsCartOpen(false)} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer' }}>×</button>
         </div>
 
         <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem' }}>
-          {status === 'success' ? (
-            <div style={{ textAlign: 'center', marginTop: '2rem', color: 'var(--secondary)' }}>
-              <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>✅</div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 600 }}>¡Pedido Recibido!</h3>
-              <p style={{ marginTop: '0.5rem', color: 'var(--text-muted)' }}>Te avisaremos en cuanto esté listo para recoger.</p>
-            </div>
-          ) : isCheckingOut ? (
-            <form id="checkout-form" onSubmit={handleCheckout} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 'bold' }}>Nombre y Apellidos *</label>
-                <input 
-                  type="text" 
-                  required
-                  placeholder="Ej: Paco Pérez"
-                  value={formData.cliente}
-                  onChange={e => setFormData({...formData, cliente: e.target.value})}
-                  style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)' }}
-                />
-              </div>
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 'bold' }}>Teléfono *</label>
-                <input required type="tel" value={formData.telefono} onChange={e => setFormData({...formData, telefono: e.target.value})} style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border)' }} />
-              </div>
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 'bold' }}>Dirección de Entrega (Opcional)</label>
-                <input 
-                  type="text" 
-                  placeholder="Calle, Número, Piso (Para envíos a domicilio)"
-                  value={formData.direccion} 
-                  onChange={e => setFormData({...formData, direccion: e.target.value})} 
-                  style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border)' }} 
-                />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Notas (opcional)</label>
-                <textarea value={formData.notas} onChange={e => setFormData({...formData, notas: e.target.value})} style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border)', minHeight: '80px' }} />
-              </div>
-              {status === 'error' && <div style={{ color: '#EF4444' }}>Ocurrió un error al enviar el pedido.</div>}
-            </form>
-          ) : items.length === 0 ? (
+          {items.length === 0 ? (
             <div style={{ textAlign: 'center', color: 'var(--text-muted)', marginTop: '2rem' }}>
               Tu carrito está vacío.
             </div>
@@ -125,25 +57,23 @@ export default function CartSidebar() {
           )}
         </div>
 
-        {items.length > 0 && status !== 'success' && (
+        {items.length > 0 && (
           <div style={{ padding: '1.5rem', borderTop: '1px solid var(--border)', backgroundColor: 'var(--background)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', fontSize: '1.25rem', fontWeight: 600 }}>
               <span>Total:</span>
               <span>{total.toFixed(2)} €</span>
             </div>
             
-            {isCheckingOut ? (
-               <div style={{ display: 'flex', gap: '1rem' }}>
-                 <button className="btn" onClick={() => setIsCheckingOut(false)} style={{ flex: 1, backgroundColor: '#E5E7EB', color: '#374151' }}>Volver</button>
-                 <button form="checkout-form" type="submit" className="btn btn-primary" style={{ flex: 2 }} disabled={status === 'loading'}>
-                   {status === 'loading' ? 'Enviando...' : 'Confirmar Pedido'}
-                 </button>
-               </div>
-            ) : (
-              <button className="btn btn-primary" onClick={() => setIsCheckingOut(true)} style={{ width: '100%', padding: '1rem' }}>
-                Proceder al Pago
-              </button>
-            )}
+            <button 
+              className="btn btn-primary" 
+              onClick={() => {
+                setIsCartOpen(false);
+                router.push('/checkout');
+              }} 
+              style={{ width: '100%', padding: '1rem' }}
+            >
+              Proceder al Pago
+            </button>
           </div>
         )}
       </div>

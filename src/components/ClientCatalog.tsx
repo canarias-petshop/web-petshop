@@ -194,7 +194,8 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
         }
 
         return { ...p, marca: marcaFormateada, categoria_web: catFinal };
-      });
+      })
+      .filter(p => p.categoria_web === 'Alimentación seca' || p.categoria_web === 'Alimentación húmeda' || p.categoria_web === 'Snack');
   }, [productos]);
 
   // Usaremos productosFormateados en lugar de productos
