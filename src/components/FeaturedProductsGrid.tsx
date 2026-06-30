@@ -48,7 +48,7 @@ export default function FeaturedProductsGrid({ productos }: { productos: any[] }
           return (
             <div key={prod.id} className="card" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', transition: 'transform 0.2s', border: '1px solid var(--border)' }}>
               <div style={{ position: 'relative', height: '220px', padding: '1rem', backgroundColor: '#ffffff', borderBottom: '1px solid var(--surface-hover)' }}>
-                <Link href="/catalogo" style={{ display: 'block', width: '100%', height: '100%' }}>
+                <Link href={`/catalogo?search=${encodeURIComponent(prod.sku || prod.nombre)}`} style={{ display: 'block', width: '100%', height: '100%' }}>
                   <div style={{
                     width: '100%', height: '100%',
                     backgroundImage: prod.sku 
@@ -65,7 +65,7 @@ export default function FeaturedProductsGrid({ productos }: { productos: any[] }
               </div>
 
               <div className="card-content" style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, padding: '1.25rem' }}>
-                <Link href="/catalogo" style={{ color: 'inherit', textDecoration: 'none' }}>
+                <Link href={`/catalogo?search=${encodeURIComponent(prod.sku || prod.nombre)}`} style={{ color: 'inherit', textDecoration: 'none' }}>
                   <div className="card-title" style={{ fontSize: '1rem', lineHeight: '1.3', marginBottom: '0.5rem', fontWeight: '600' }}>
                     {prod.nombre}
                   </div>

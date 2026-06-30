@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import AddToCartBtn from '@/components/AddToCartBtn';
 import { Search, Filter, X } from 'lucide-react';
 
@@ -165,6 +165,16 @@ function BrandFilterSection({ productos, selectedMarcas, setSelectedMarcas, sele
 export default function ClientCatalog({ productos }: { productos: Product[] }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const search = params.get('search');
+      if (search) {
+        setSearchQuery(search);
+      }
+    }
+  }, []);
 
   const productosFormateados = useMemo(() => {
     return productos

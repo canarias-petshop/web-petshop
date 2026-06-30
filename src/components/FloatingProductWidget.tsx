@@ -122,7 +122,7 @@ export default function FloatingProductWidget({ productos }: { productos: any[] 
           <span style={{ fontSize: '1.1rem', fontWeight: 800, color: isCaja ? '#e74c3c' : 'var(--text)' }}>
             {finalPrice.toFixed(2)} €
           </span>
-          <Link href="/catalogo" style={{ fontSize: '0.8rem', color: 'var(--primary)', fontWeight: 600 }}>
+          <Link href={`/catalogo?search=${encodeURIComponent(currentProduct.sku || currentProduct.nombre)}`} style={{ fontSize: '0.8rem', color: 'var(--primary)', fontWeight: 600 }}>
             Ver más
           </Link>
         </div>
