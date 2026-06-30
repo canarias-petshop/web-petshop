@@ -215,12 +215,12 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
   
 
   // Listas únicas para construir el menú
-  const categorias = useMemo(() => Array.from(new Set(productosFormateados.map(p => p.categoria_web).filter(Boolean))).sort(), [productosFormateados]);
-  const mascotas = useMemo(() => Array.from(new Set(productosFormateados.map(p => p.mascota).filter(Boolean))).sort(), [productosFormateados]);
-  const edades = useMemo(() => Array.from(new Set(productosFormateados.map(p => p.edad).filter(Boolean))).sort(), [productosFormateados]);
-  const tamanos = useMemo(() => Array.from(new Set(productosFormateados.map(p => p.tamano).filter(Boolean))).sort(), [productosFormateados]);
-  const necesidades = useMemo(() => Array.from(new Set(productosFormateados.map(p => p.necesidad_especial).filter(Boolean))).filter(n => n !== 'Ninguna').sort(), [productosFormateados]);
-  const sabores = useMemo(() => Array.from(new Set(productosFormateados.map(p => p.sabor_principal).filter(Boolean))).sort(), [productosFormateados]);
+  const categorias = useMemo(() => (Array.from(new Set(productosFormateados.map(p => p.categoria_web).filter(Boolean))) as string[]).sort(), [productosFormateados]);
+  const mascotas = useMemo(() => (Array.from(new Set(productosFormateados.map(p => p.mascota).filter(Boolean))) as string[]).sort(), [productosFormateados]);
+  const edades = useMemo(() => (Array.from(new Set(productosFormateados.map(p => p.edad).filter(Boolean))) as string[]).sort(), [productosFormateados]);
+  const tamanos = useMemo(() => (Array.from(new Set(productosFormateados.map(p => p.tamano).filter(Boolean))) as string[]).sort(), [productosFormateados]);
+  const necesidades = useMemo(() => (Array.from(new Set(productosFormateados.map(p => p.necesidad_especial).filter(Boolean))) as string[]).filter(n => n !== 'Ninguna').sort(), [productosFormateados]);
+  const sabores = useMemo(() => (Array.from(new Set(productosFormateados.map(p => p.sabor_principal).filter(Boolean))) as string[]).sort(), [productosFormateados]);
 
   // Manejador genérico de toggles
   const toggle = (setter: React.Dispatch<React.SetStateAction<string[]>>, value: string) => {
@@ -417,7 +417,7 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
                     </div>
                     
                     <div style={{ marginTop: '1rem' }}>
-                      <AddToCartBtn product={prod} />
+                      <AddToCartBtn product={{...prod, precio: Number(prod.precio_pvp) || 0}} />
                     </div>
                   </div>
                 </div>
