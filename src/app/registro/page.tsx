@@ -75,10 +75,13 @@ export default function RegisterPage() {
       if (searchError) throw searchError;
 
       if (existingClients && existingClients.length > 0) {
-        // Actualizar el cliente existente con el auth_user_id
+        // Actualizar el cliente existente con el auth_user_id y el nombre completo
         const { error: updateError } = await supabase
           .from('clientes')
-          .update({ auth_user_id: userId })
+          .update({ 
+            auth_user_id: userId,
+            nombre_dueno: fullName
+          })
           .eq('id', existingClients[0].id);
           
         if (updateError && updateError.code !== 'PGRST204') { // Ignorar error si la columna no existe aún

@@ -69,7 +69,7 @@ export default function MiCuentaPage() {
             Mi Cuenta
           </h1>
           <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>
-            ¡Hola, {clienteData ? clienteData.nombre : user.user_metadata?.nombre || 'Amigo'}!
+            ¡Hola, {clienteData ? clienteData.nombre_dueno : user.user_metadata?.nombre || 'Amigo'}!
           </p>
         </div>
         <button 
