@@ -158,21 +158,27 @@ export default function CheckoutPage() {
         
         {paymentMethod === 'Bizum' && (
           <div style={{ backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0', padding: '1.5rem', borderRadius: 'var(--radius)', marginBottom: '2rem', maxWidth: '500px' }}>
-            <h3 style={{ color: '#166534', fontWeight: 'bold', marginBottom: '0.5rem' }}>Instrucciones para Bizum</h3>
+            <h3 style={{ color: '#166534', fontWeight: 'bold', marginBottom: '0.5rem' }}>Pago por Bizum</h3>
             <p style={{ color: '#15803d' }}>
-              Por favor, envía un Bizum de <strong>{finalTotal.toFixed(2)}€</strong> al número:<br/>
-              <span style={{ fontSize: '1.5rem', fontWeight: 'bold', display: 'block', margin: '0.5rem 0' }}>672 481 295</span>
-              Indica tu nombre en el concepto.
+              Nos pondremos en contacto contigo por WhatsApp para confirmar que tenemos todos tus artículos y te facilitaremos el número para enviar el Bizum de <strong>{finalTotal.toFixed(2)}€</strong>.
             </p>
           </div>
         )}
 
-        {paymentMethod === 'Transferencia' && (
+        {paymentMethod === 'Tarjeta (Enlace de Pago)' && (
           <div style={{ backgroundColor: '#eff6ff', border: '1px solid #bfdbfe', padding: '1.5rem', borderRadius: 'var(--radius)', marginBottom: '2rem', maxWidth: '500px' }}>
-            <h3 style={{ color: '#1e40af', fontWeight: 'bold', marginBottom: '0.5rem' }}>Instrucciones para Transferencia</h3>
+            <h3 style={{ color: '#1e40af', fontWeight: 'bold', marginBottom: '0.5rem' }}>Pago con Tarjeta</h3>
             <p style={{ color: '#1d4ed8' }}>
-              Realiza una transferencia de <strong>{finalTotal.toFixed(2)}€</strong> a nuestra cuenta bancaria.<br/>
-              Nos pondremos en contacto contigo por WhatsApp para facilitarte el IBAN.
+              Nos pondremos en contacto contigo por WhatsApp para confirmar tu pedido y te enviaremos un <strong>enlace de pago 100% seguro</strong> por valor de <strong>{finalTotal.toFixed(2)}€</strong>.
+            </p>
+          </div>
+        )}
+        
+        {paymentMethod === 'Efectivo/Tarjeta en tienda' && (
+          <div style={{ backgroundColor: '#fef3c7', border: '1px solid #fde68a', padding: '1.5rem', borderRadius: 'var(--radius)', marginBottom: '2rem', maxWidth: '500px' }}>
+            <h3 style={{ color: '#b45309', fontWeight: 'bold', marginBottom: '0.5rem' }}>Pago en Tienda</h3>
+            <p style={{ color: '#92400e' }}>
+              Podrás pagar en efectivo o con tarjeta al momento de recoger tu pedido en nuestra tienda. Te avisaremos cuando esté listo.
             </p>
           </div>
         )}
@@ -280,11 +286,11 @@ export default function CheckoutPage() {
               <CreditCard size={20} color="var(--primary)" /> Método de Pago
             </h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', border: '1px solid var(--border)', borderRadius: '12px', cursor: 'pointer', backgroundColor: paymentMethod === 'Efectivo/Tarjeta al recibir' ? '#fdf2f8' : 'transparent', borderColor: paymentMethod === 'Efectivo/Tarjeta al recibir' ? 'var(--primary)' : 'var(--border)' }}>
-                <input type="radio" name="payment" checked={paymentMethod === 'Efectivo/Tarjeta al recibir'} onChange={() => setPaymentMethod('Efectivo/Tarjeta al recibir')} style={{ accentColor: 'var(--primary)', width: '18px', height: '18px' }} />
+              <label style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', border: '1px solid var(--border)', borderRadius: '12px', cursor: 'pointer', backgroundColor: paymentMethod === 'Tarjeta (Enlace de Pago)' ? '#fdf2f8' : 'transparent', borderColor: paymentMethod === 'Tarjeta (Enlace de Pago)' ? 'var(--primary)' : 'var(--border)' }}>
+                <input type="radio" name="payment" checked={paymentMethod === 'Tarjeta (Enlace de Pago)'} onChange={() => setPaymentMethod('Tarjeta (Enlace de Pago)')} style={{ accentColor: 'var(--primary)', width: '18px', height: '18px' }} />
                 <div>
-                  <div style={{ fontWeight: 600 }}>Pago al recibir (Efectivo o Tarjeta)</div>
-                  <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Nuestro repartidor lleva datáfono inalámbrico o paga al recoger en tienda.</div>
+                  <div style={{ fontWeight: 600 }}>Tarjeta de Crédito / Débito (Enlace de pago)</div>
+                  <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Al confirmar el pedido y stock, te enviaremos por WhatsApp un enlace de pago seguro.</div>
                 </div>
               </label>
 
@@ -292,15 +298,15 @@ export default function CheckoutPage() {
                 <input type="radio" name="payment" checked={paymentMethod === 'Bizum'} onChange={() => setPaymentMethod('Bizum')} style={{ accentColor: 'var(--primary)', width: '18px', height: '18px' }} />
                 <div>
                   <div style={{ fontWeight: 600 }}>Bizum</div>
-                  <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Te mostraremos el número de teléfono al confirmar</div>
+                  <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Te enviaremos las instrucciones y el número por WhatsApp al confirmar stock.</div>
                 </div>
               </label>
               
-              <label style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', border: '1px solid var(--border)', borderRadius: '12px', cursor: 'pointer', backgroundColor: paymentMethod === 'Transferencia' ? '#fdf2f8' : 'transparent', borderColor: paymentMethod === 'Transferencia' ? 'var(--primary)' : 'var(--border)' }}>
-                <input type="radio" name="payment" checked={paymentMethod === 'Transferencia'} onChange={() => setPaymentMethod('Transferencia')} style={{ accentColor: 'var(--primary)', width: '18px', height: '18px' }} />
+              <label style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', border: '1px solid var(--border)', borderRadius: '12px', cursor: 'pointer', backgroundColor: paymentMethod === 'Efectivo/Tarjeta en tienda' ? '#fdf2f8' : 'transparent', borderColor: paymentMethod === 'Efectivo/Tarjeta en tienda' ? 'var(--primary)' : 'var(--border)' }}>
+                <input type="radio" name="payment" checked={paymentMethod === 'Efectivo/Tarjeta en tienda'} onChange={() => setPaymentMethod('Efectivo/Tarjeta en tienda')} style={{ accentColor: 'var(--primary)', width: '18px', height: '18px' }} />
                 <div>
-                  <div style={{ fontWeight: 600 }}>Transferencia Bancaria</div>
-                  <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Tu pedido se procesará al recibir el importe</div>
+                  <div style={{ fontWeight: 600 }}>Pago al recoger en tienda</div>
+                  <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Solo aplicable si has seleccionado "Recogida en tienda". Paga en efectivo o tarjeta.</div>
                 </div>
               </label>
             </div>

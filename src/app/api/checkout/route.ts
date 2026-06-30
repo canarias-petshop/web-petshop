@@ -107,19 +107,15 @@ export async function POST(request: Request) {
         total: total_final,
         pagado: pagado,
         pendiente: pendiente,
-        metodo_pago: metodoLog, // Asumiendo que usa esta columna
-        metodo: metodoLog, // Por si usa esta
-        cliente_fidel: cliente,
-        cliente_deuda: cliente, // Asignamos la deuda al cliente
+        metodo_pago: metodoLog, 
+        cliente_deuda: cliente, 
         puntos_ganados: puntos_ganados || 0,
         puntos_usados: puntos_usados || 0,
-        puntos_descontados: puntos_usados || 0,
-        nuevo_saldo: nuevo_saldo_puntos,
         descuento_global: 0,
         hash_anterior: hash_anterior,
         hash_actual: hash_actual,
         estado: estadoVenta,
-        empleado: 'WEB'
+        cliente_vip_nombre: cliente // Para que quede registrado el cliente
       });
 
     if (errorVenta) {
@@ -130,6 +126,17 @@ export async function POST(request: Request) {
     const detalle_pedido = items.map((i: any) => `${i.cantidad}x ${i.nombre}`).join(' + ');
     let notasFinales = notas || `Pedido Web - Pago: ${metodo_pago}`;
     
+    // SIEMPRE insertamos en encargos_clientes para que aparezca en "Pedidos Web"
+    await supabase.from('encargos_clientes').insert({
+      nombre_cliente: cliente,
+      telefono: telefono || '',
+      detalle_pedido: detalle_pedido,
+      notas: metodo_entrega === 'Envío a domicilio' ? `[DOMICILIO] ${notasFinales}` : `[RECOGIDA TIENDA] ${notasFinales}`,
+      estado: 'Pendiente',
+      origen: 'Web'
+    });
+
+    // ADICIONALMENTE, si es a domicilio, lo insertamos en pedidos_domicilio para el gestor de repartos
     if (metodo_entrega === 'Envío a domicilio') {
       await supabase.from('pedidos_domicilio').insert({
         nombre_cliente: cliente,
@@ -138,15 +145,6 @@ export async function POST(request: Request) {
         detalle_pedido: detalle_pedido,
         estado: 'Pendiente',
         notas: notasFinales
-      });
-    } else {
-      await supabase.from('encargos_clientes').insert({
-        nombre_cliente: cliente,
-        telefono: telefono || '',
-        detalle_pedido: detalle_pedido,
-        notas: `RECOGIDA EN TIENDA | ${notasFinales}`,
-        estado: 'Pendiente',
-        origen: 'Web'
       });
     }
 
