@@ -42,7 +42,7 @@ export default function CartSidebar() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {items.map(item => {
                 const isCaja = item.nombre?.toLowerCase().includes('caja');
-                const originalPrice = isCaja ? item.precio / 0.9 : item.precio;
+                const originalPrice = isCaja ? item.precio / 0.93 : item.precio;
                 return (
                 <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '1rem', borderBottom: '1px solid var(--border)' }}>
                   <div style={{ flex: 1, paddingRight: '1rem' }}>
@@ -55,7 +55,7 @@ export default function CartSidebar() {
                           background: '#e74c3c', color: 'white', 
                           padding: '2px 6px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 'bold'
                         }}>
-                          -10% DTO.
+                          -7% DTO.
                         </span>
                       )}
                     </div>

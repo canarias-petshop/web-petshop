@@ -359,8 +359,8 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
               {productosFiltrados.map((prod) => {
                 const isCaja = prod.nombre?.toLowerCase().includes('caja');
                 const originalPrice = Number(prod.precio_pvp) || 0;
-                // Calculamos un 10% de descuento si es caja
-                const finalPrice = isCaja ? originalPrice * 0.90 : originalPrice;
+                // Calculamos un 7% de descuento si es caja
+                const finalPrice = isCaja ? originalPrice * 0.93 : originalPrice;
 
                 return (
                 <div key={prod.id} className="card" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', transition: 'transform 0.2s', border: '1px solid var(--border)' }}>
@@ -401,7 +401,7 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
                          padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold',
                          boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
                        }}>
-                         -10% DTO. CAJA
+                         -7% DTO. CAJA
                        </span>
                     )}
                   </div>

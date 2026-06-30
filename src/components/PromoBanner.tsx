@@ -5,7 +5,7 @@ import { Sparkles, Package, Star, Truck } from 'lucide-react';
 
 const MESSAGES = [
   { text: '¡10% de descuento en tu primera compra al registrarte!', icon: Sparkles },
-  { text: '10% de descuento por la compra de cajas enteras de pouch.', icon: Package },
+  { text: '7% de descuento por la compra de cajas enteras de pouch.', icon: Package },
   { text: 'Programa de Fidelidad: Acumula puntos con tus compras y consigue descuentos.', icon: Star },
   { text: 'Envío gratuito en pedidos superiores a 130€.', icon: Truck },
 ];
