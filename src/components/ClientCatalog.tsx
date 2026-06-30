@@ -230,7 +230,7 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
   // Filtrado y ordenación de productos
   const productosFiltrados = useMemo(() => {
     const filtered = productosFormateados.filter(p => {
-      const matchInArray = (arr: string[], val: string) => {
+      const matchInArray = (arr: string[], val?: string) => {
         if (arr.length === 0) return true;
         if (!val) return false;
         return arr.map(s => s.trim().toLowerCase()).includes(val.trim().toLowerCase());
