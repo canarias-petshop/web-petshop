@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
-import { UserPlus, Mail, Lock, User, Phone, AlertCircle } from "lucide-react";
+import { UserPlus, Mail, Lock, User, Phone, AlertCircle, Eye, EyeOff } from "lucide-react";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -14,11 +14,14 @@ export default function RegisterPage() {
     telefono: "",
     email: "",
     password: "",
+    confirmPassword: "",
     rgpd: false
   });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -30,6 +33,10 @@ export default function RegisterPage() {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (formData.password !== formData.confirmPassword) {
+      setError("Las contraseñas no coinciden");
+      return;
+    }
     if (!formData.rgpd) {
       setError("Debes aceptar la política de privacidad");
       return;
@@ -82,7 +89,7 @@ export default function RegisterPage() {
         const { error: insertError } = await supabase
           .from('clientes')
           .insert({
-            nombre: `${formData.nombre} ${formData.apellido}`.trim(),
+            nombre_dueno: `${formData.nombre} ${formData.apellido}`.trim(),
             telefono: formData.telefono,
             email: formData.email,
             puntos: 0,
@@ -297,7 +304,7 @@ export default function RegisterPage() {
                 <Lock size={18} />
               </div>
               <input 
-                type="password" 
+                type={showPassword ? "text" : "password"}
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
@@ -305,7 +312,7 @@ export default function RegisterPage() {
                 minLength={6}
                 style={{
                   width: '100%',
-                  padding: '0.75rem 0.75rem 0.75rem 2.5rem',
+                  padding: '0.75rem 2.5rem 0.75rem 2.5rem',
                   borderRadius: '12px',
                   border: '1px solid var(--border)',
                   outline: 'none',
@@ -314,6 +321,49 @@ export default function RegisterPage() {
                 }}
                 placeholder="••••••••"
               />
+              <button 
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--text-main)' }}>
+              Repite la Contraseña
+            </label>
+            <div style={{ position: 'relative' }}>
+              <div style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}>
+                <Lock size={18} />
+              </div>
+              <input 
+                type={showConfirmPassword ? "text" : "password"}
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                required
+                minLength={6}
+                style={{
+                  width: '100%',
+                  padding: '0.75rem 2.5rem 0.75rem 2.5rem',
+                  borderRadius: '12px',
+                  border: '1px solid var(--border)',
+                  outline: 'none',
+                  fontSize: '1rem',
+                  fontFamily: 'inherit'
+                }}
+                placeholder="••••••••"
+              />
+              <button 
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
+              >
+                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
           </div>
 
