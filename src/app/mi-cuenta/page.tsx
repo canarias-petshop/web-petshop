@@ -3,13 +3,14 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase, anonSupabase } from "@/lib/supabase";
-import { LogOut, User, Gift, PawPrint, Calendar, Scissors, Info } from "lucide-react";
+import { LogOut, User, Gift, PawPrint, Calendar, Scissors, Info, Package, Clock } from "lucide-react";
 
 export default function MiCuentaPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [clienteData, setClienteData] = useState<any>(null);
+  const [pedidos, setPedidos] = useState<any[]>([]);
 
   useEffect(() => {
     async function fetchUserData() {
@@ -22,7 +23,7 @@ export default function MiCuentaPage() {
 
         setUser(user);
 
-        // Fetch client data, pets, and their appointments using anon client to bypass RLS issues
+        // Fetch client data, pets, and their appointments using anon client
         const { data: clientData, error: clientError } = await anonSupabase
           .from("clientes")
           .select("*, mascotas(*, citas(*))")
@@ -33,6 +34,20 @@ export default function MiCuentaPage() {
           console.error("Error fetching client data:", clientError);
         } else if (clientData) {
           setClienteData(clientData);
+          
+          // Fetch user orders (pedidos)
+          if (clientData.telefono || user.user_metadata?.telefono) {
+            const tel = clientData.telefono || user.user_metadata?.telefono;
+            const { data: pedidosData } = await anonSupabase
+              .from("encargos_clientes")
+              .select("*")
+              .eq("telefono", tel)
+              .order("created_at", { ascending: false });
+              
+            if (pedidosData) {
+              setPedidos(pedidosData);
+            }
+          }
         }
       } catch (err) {
         console.error(err);
@@ -135,6 +150,50 @@ export default function MiCuentaPage() {
           </p>
         </div>
       </div>
+
+      {/* Pedidos Section */}
+      <h2 style={{ fontSize: '1.75rem', fontWeight: 700, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <Package color="var(--primary)" />
+        Histórico de Pedidos
+      </h2>
+
+      {pedidos.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '3rem', backgroundColor: 'var(--surface)', borderRadius: 'var(--radius)', border: '1px dashed var(--border)', color: 'var(--text-muted)', marginBottom: '3rem' }}>
+          <Package size={48} style={{ opacity: 0.2, margin: '0 auto 1rem' }} />
+          <p style={{ fontSize: '1.1rem' }}>Aún no has realizado ningún pedido web.</p>
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '3rem' }}>
+          {pedidos.map((pedido) => (
+            <div key={pedido.id} style={{ backgroundColor: 'var(--surface)', borderRadius: 'var(--radius)', border: '1px solid var(--border)', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', boxShadow: 'var(--shadow-sm)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                    <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)', fontWeight: 600 }}>Pedido #{pedido.id}</span>
+                    <span style={{ fontSize: '0.8rem', backgroundColor: pedido.estado === 'Entregado' ? '#dcfce7' : '#fef9c3', color: pedido.estado === 'Entregado' ? '#166534' : '#854d0e', padding: '0.1rem 0.5rem', borderRadius: '999px', fontWeight: 600 }}>
+                      {pedido.estado || 'Pendiente'}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                    <Clock size={14} />
+                    {new Date(pedido.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                  </div>
+                </div>
+                
+                {pedido.origen && (
+                  <div style={{ fontSize: '0.8rem', color: 'var(--primary)', fontWeight: 600, border: '1px solid var(--primary)', padding: '0.25rem 0.75rem', borderRadius: '999px' }}>
+                    {pedido.origen}
+                  </div>
+                )}
+              </div>
+              
+              <div style={{ padding: '1rem', backgroundColor: 'var(--background)', borderRadius: '8px', fontSize: '0.95rem', color: 'var(--text-main)' }}>
+                {pedido.detalle_pedido}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Mascotas Section */}
       <h2 style={{ fontSize: '1.75rem', fontWeight: 700, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
