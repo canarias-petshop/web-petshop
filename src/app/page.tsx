@@ -1,7 +1,22 @@
 import Link from 'next/link';
 import PromoBanner from '@/components/PromoBanner';
+import { supabase } from '@/lib/supabase';
+import FloatingProductWidget from '@/components/FloatingProductWidget';
 
-export default function Home() {
+export const dynamic = 'force-dynamic';
+
+export default async function Home() {
+  // Fetch random subset or all web products for the widget
+  const { data: productos, error } = await supabase
+    .from('productos')
+    .select('*')
+    .not('familia', 'is', null)
+    .neq('familia', '');
+
+  if (error) {
+    console.error("Error fetching products for Home:", error);
+  }
+
   return (
     <div>
       <PromoBanner />
@@ -93,6 +108,8 @@ export default function Home() {
           </Link>
         </div>
       </section>
+
+      <FloatingProductWidget productos={productos || []} />
     </div>
   );
 }
