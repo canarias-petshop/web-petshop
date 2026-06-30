@@ -403,12 +403,19 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
                       {prod.necesidad_especial && prod.necesidad_especial !== 'Ninguna' && <span style={{fontSize: '0.7rem', padding: '2px 6px', background: 'var(--surface-hover)', borderRadius: '4px', color: 'var(--primary)'}}>{prod.necesidad_especial}</span>}
                     </div>
 
-                    {/* Características Extra */}
-                    {prod.caracteristicas && (
-                      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1rem', lineHeight: '1.4' }}>
-                        {prod.caracteristicas}
-                      </div>
-                    )}
+                    {/* Características Extra y Referencia */}
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1rem', lineHeight: '1.4', flexGrow: 1 }}>
+                      {prod.caracteristicas && (
+                        <div style={{ marginBottom: '0.5rem' }}>
+                          {prod.caracteristicas}
+                        </div>
+                      )}
+                      {prod.sku && (
+                        <div style={{ fontSize: '0.75rem', opacity: 0.8, marginTop: 'auto' }}>
+                          Ref: {prod.sku}
+                        </div>
+                      )}
+                    </div>
 
                     <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div className="card-price" style={{ fontSize: '1.4rem', fontWeight: '800', color: 'var(--text)' }}>
