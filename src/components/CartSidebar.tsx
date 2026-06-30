@@ -76,7 +76,8 @@ export default function CartSidebar() {
                     <button onClick={() => updateQuantity(item.id, item.cantidad + 1)} style={{ width: '28px', height: '28px', borderRadius: '4px', border: '1px solid var(--border)', background: 'var(--background)', cursor: 'pointer' }}>+</button>
                   </div>
                 </div>
-              ))}
+              );
+            })}
             </div>
           )}
         </div>
