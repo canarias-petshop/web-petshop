@@ -247,9 +247,9 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
       // Lógica anidada para Marca y Subcategoría (Pestañas/Desplegable)
       const brandHasAnySelection = selectedMarcas.length > 0 || Object.values(selectedMarcaSubs).some(arr => arr.length > 0);
       if (brandHasAnySelection) {
-        const subsForThisBrand = selectedMarcaSubs[p.marca] || [];
+        const subsForThisBrand = p.marca ? (selectedMarcaSubs[p.marca] || []) : [];
         const nestedVal = p.gama || p.subcategoria;
-        if (selectedMarcas.includes(p.marca) && subsForThisBrand.length === 0) {
+        if (p.marca && selectedMarcas.includes(p.marca) && subsForThisBrand.length === 0) {
           // Brand selected entirely
         } else if (nestedVal && subsForThisBrand.includes(nestedVal)) {
           // Specific subcategory selected
