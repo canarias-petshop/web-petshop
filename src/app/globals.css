@@ -111,9 +111,9 @@ a {
 
 /* Hero Section */
 .hero {
-  padding: 8rem 0;
+  padding: 13rem 0;
   text-align: center;
-  background-image: url('/tropical_animals_bg.png');
+  background-image: url('/tropical_animals_bg.png?v=8');
   background-size: cover;
   background-position: center;
   border-bottom: 4px solid var(--accent);
@@ -122,19 +122,19 @@ a {
 
 .hero-box {
   background-color: rgba(255, 255, 255, 0.9);
-  padding: 3rem;
+  padding: 2.5rem;
   border-radius: var(--radius);
-  max-width: 800px;
+  max-width: 680px;
   margin: 0 auto;
   box-shadow: var(--shadow-lg);
   border: 2px solid var(--primary);
 }
 
 .hero h1 {
-  font-size: 3.5rem;
+  font-size: 3rem;
   font-weight: 700;
   letter-spacing: -1px;
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;
   color: var(--text-main);
 }
 
