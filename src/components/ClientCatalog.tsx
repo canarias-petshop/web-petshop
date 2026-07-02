@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import AddToCartBtn from '@/components/AddToCartBtn';
 import { Search, Filter, X } from 'lucide-react';
@@ -170,6 +170,11 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
 
   const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+  
+  // Cross-sell states
+  const [crossSellTarget, setCrossSellTarget] = useState<Product | null>(null);
+  const [showCrossSell, setShowCrossSell] = useState(false);
+  const hoverTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (searchParams) {
@@ -452,7 +457,24 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
                 const finalPrice = isCaja ? originalPrice * 0.93 : originalPrice;
 
                 return (
-                <div key={prod.id} className="card" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', transition: 'transform 0.2s', border: '1px solid var(--border)' }}>
+                <div 
+                  key={prod.id} 
+                  className="card" 
+                  style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', transition: 'transform 0.2s', border: '1px solid var(--border)' }}
+                  onMouseEnter={() => {
+                    if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
+                    hoverTimerRef.current = setTimeout(() => {
+                      setCrossSellTarget(prod);
+                      setShowCrossSell(true);
+                    }, 5000);
+                  }}
+                  onMouseLeave={() => {
+                    if (hoverTimerRef.current) {
+                      clearTimeout(hoverTimerRef.current);
+                      hoverTimerRef.current = null;
+                    }
+                  }}
+                >
                   
                   <div style={{ position: 'relative', height: '220px', padding: '1rem', backgroundColor: '#ffffff', borderBottom: '1px solid var(--surface-hover)' }}>
                     <div style={{
@@ -523,6 +545,109 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
           </div>
         )}
       </div>
+
+      {showCrossSell && crossSellTarget && (
+        <CrossSellPopup 
+          targetProduct={crossSellTarget} 
+          allProducts={productosFormateados} 
+          onClose={() => { setShowCrossSell(false); setCrossSellTarget(null); }} 
+        />
+      )}
+    </div>
+  );
+}
+
+function CrossSellPopup({ targetProduct, allProducts, onClose }: { targetProduct: Product, allProducts: Product[], onClose: () => void }) {
+  const suggestedProducts = useMemo(() => {
+    const sameMascota = allProducts.filter(p => p.id !== targetProduct.id && p.mascota === targetProduct.mascota);
+    let complements = sameMascota.filter(p => p.categoria_web !== targetProduct.categoria_web);
+    if (complements.length === 0) complements = sameMascota;
+    const shuffled = [...complements].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 2);
+  }, [targetProduct, allProducts]);
+
+  if (suggestedProducts.length === 0) return null;
+
+  return (
+    <div style={{
+      position: 'fixed',
+      bottom: '20px',
+      right: '20px',
+      width: '320px',
+      backgroundColor: 'var(--surface)',
+      borderRadius: 'var(--radius)',
+      boxShadow: 'var(--shadow-lg)',
+      border: '2px solid var(--primary)',
+      zIndex: 9999,
+      padding: '1.2rem',
+      animation: 'slideUp 0.3s ease-out'
+    }}>
+      <button 
+        onClick={onClose}
+        style={{ position: 'absolute', top: '10px', right: '10px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}
+      >
+        <X size={20} />
+      </button>
+      
+      <h4 style={{ color: 'var(--primary)', marginBottom: '1rem', fontSize: '0.95rem', paddingRight: '20px', lineHeight: 1.2 }}>
+        ¿Has visto esto para {targetProduct.mascota || 'tu mascota'}?
+      </h4>
+      
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+        {suggestedProducts.map(sp => {
+          const originalPrice = Number(sp.precio_pvp) || 0;
+          const isCaja = sp.nombre?.toLowerCase().includes('caja');
+          const finalPrice = isCaja ? originalPrice * 0.93 : originalPrice;
+          
+          return (
+            <div key={sp.id} style={{ display: 'flex', gap: '10px', alignItems: 'center', paddingBottom: '0.8rem', borderBottom: '1px solid var(--border)' }}>
+              <div style={{
+                width: '60px', height: '60px', flexShrink: 0,
+                backgroundImage: sp.sku ? `url("/images/productos/${encodeURIComponent(sp.sku)}.jpg")` : `url("/placeholder.png")`,
+                backgroundSize: 'contain', backgroundRepeat: 'no-repeat', backgroundPosition: 'center'
+              }} />
+              <div style={{ flexGrow: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <div style={{ fontSize: '0.85rem', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {sp.nombre}
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ color: 'var(--primary)', fontWeight: 'bold', fontSize: '1rem' }}>
+                    {finalPrice.toFixed(2)} €
+                  </div>
+                  <div style={{ display: 'flex', gap: '6px' }}>
+                    <button 
+                      onClick={() => {
+                        window.location.href = `/catalogo?search=${encodeURIComponent(sp.sku || sp.nombre)}`;
+                      }}
+                      style={{
+                        backgroundColor: 'var(--surface-hover)',
+                        color: 'var(--primary)',
+                        padding: '4px 10px',
+                        borderRadius: '6px',
+                        fontWeight: 'bold',
+                        fontSize: '0.8rem',
+                        border: '1px solid var(--primary)',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      VER
+                    </button>
+                    <AddToCartBtn product={{...sp, precio: finalPrice, precio_pvp: finalPrice}} mini={true} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      
+      <style>{`
+        @keyframes slideUp {
+          from { transform: translateY(100px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+      `}</style>
     </div>
   );
 }
