@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
 import AddToCartBtn from '@/components/AddToCartBtn';
 import { Search, Filter, X } from 'lucide-react';
 
@@ -163,18 +164,25 @@ function BrandFilterSection({ productos, selectedMarcas, setSelectedMarcas, sele
 }
 
 export default function ClientCatalog({ productos }: { productos: Product[] }) {
-  const [searchQuery, setSearchQuery] = useState('');
+  const searchParams = useSearchParams();
+  const initialSearch = searchParams?.get('search') || '';
+  const initialCat = searchParams?.get('categoria');
+
+  const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      const search = params.get('search');
-      if (search) {
+    if (searchParams) {
+      const search = searchParams.get('search');
+      if (search !== null) {
         setSearchQuery(search);
       }
+      const cat = searchParams.get('categoria');
+      if (cat !== null) {
+        setSelectedCategorias([cat]);
+      }
     }
-  }, []);
+  }, [searchParams]);
 
   const productosFormateados = useMemo(() => {
     return productos
@@ -215,7 +223,7 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
   const [selectedMarcas, setSelectedMarcas] = useState<string[]>([]);
   const [selectedMarcaSubs, setSelectedMarcaSubs] = useState<Record<string, string[]>>({});
   const [selectedGamas, setSelectedGamas] = useState<string[]>([]);
-  const [selectedCategorias, setSelectedCategorias] = useState<string[]>([]);
+  const [selectedCategorias, setSelectedCategorias] = useState<string[]>(initialCat ? [initialCat] : []);
   const [selectedMascotas, setSelectedMascotas] = useState<string[]>([]);
   const [selectedEdades, setSelectedEdades] = useState<string[]>([]);
   const [selectedTamanos, setSelectedTamanos] = useState<string[]>([]);

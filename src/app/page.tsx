@@ -47,7 +47,7 @@ export default async function Home() {
             <span style={{ position: 'absolute', top: '15px', right: '15px', background: '#e11d48', color: 'white', padding: '4px 10px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold' }}>-7% DTO</span>
             <h3 style={{ fontSize: '1.8rem', color: '#be123c', marginBottom: '0.5rem', zIndex: 2, fontWeight: 700 }}>Cajas de Húmedo</h3>
             <p style={{ color: '#881337', marginBottom: '1.5rem', zIndex: 2, fontSize: '1.1rem' }}>Llévate la caja entera (pouches o latas) y ahorra al instante.</p>
-            <Link href="/catalogo" className="btn btn-primary" style={{ alignSelf: 'flex-start', zIndex: 2 }}>Ver Húmedos</Link>
+            <Link href="/catalogo?categoria=Alimentación húmeda" className="btn btn-primary" style={{ alignSelf: 'flex-start', zIndex: 2 }}>Ver Húmedos</Link>
           </div>
           
           {/* Tarjeta Promocional 2 */}
@@ -55,7 +55,7 @@ export default async function Home() {
             <span style={{ position: 'absolute', top: '15px', right: '15px', background: '#0284c7', color: 'white', padding: '4px 10px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold' }}>Novedad</span>
             <h3 style={{ fontSize: '1.8rem', color: '#0369a1', marginBottom: '0.5rem', zIndex: 2, fontWeight: 700 }}>Snacks Naturales</h3>
             <p style={{ color: '#0c4a6e', marginBottom: '1.5rem', zIndex: 2, fontSize: '1.1rem' }}>Premia a tu mascota con los mejores ingredientes 100% naturales.</p>
-            <Link href="/catalogo" className="btn" style={{ alignSelf: 'flex-start', zIndex: 2, backgroundColor: '#0284c7', color: 'white' }}>Explorar Snacks</Link>
+            <Link href="/catalogo?categoria=Snack" className="btn" style={{ alignSelf: 'flex-start', zIndex: 2, backgroundColor: '#0284c7', color: 'white' }}>Explorar Snacks</Link>
           </div>
         </div>
         
