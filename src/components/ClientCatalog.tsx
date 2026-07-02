@@ -20,6 +20,7 @@ export type Product = {
   precio_pvp?: string | number;
   sku?: string;
   caracteristicas?: string;
+  categoria_web?: string;
 };
 
 // Componente reutilizable para renderizar cada bloque de checkboxes (Acordeón)
