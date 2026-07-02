@@ -52,7 +52,7 @@ export default function FeaturedProductsGrid({ productos }: { productos: any[] }
                   <div style={{
                     width: '100%', height: '100%',
                     backgroundImage: prod.sku 
-                      ? `url("/images/productos/${encodeURIComponent(prod.sku)}.jpg"), url("/placeholder.png")` 
+                      ? `url("/images/productos/${encodeURIComponent(prod.sku)}.jpg")` 
                       : `url("/placeholder.png")`, 
                     backgroundSize: 'contain', backgroundRepeat: 'no-repeat', backgroundPosition: 'center',
                   }} />

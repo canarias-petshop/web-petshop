@@ -99,7 +99,7 @@ export default function FloatingProductWidget({ productos }: { productos: any[] 
         flexShrink: 0,
         backgroundColor: '#fff',
         borderRadius: 'var(--radius)',
-        backgroundImage: currentProduct.sku ? `url("/images/productos/${encodeURIComponent(currentProduct.sku)}.jpg"), url("/placeholder.png")` : `url("/placeholder.png")`,
+        backgroundImage: currentProduct.sku ? `url("/images/productos/${encodeURIComponent(currentProduct.sku)}.jpg")` : `url("/placeholder.png")`,
         backgroundSize: 'contain',
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center',

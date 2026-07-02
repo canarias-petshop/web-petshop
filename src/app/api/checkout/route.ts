@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
-import crypto from 'crypto';
 
 export async function POST(request: Request) {
   try {
@@ -15,18 +14,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Faltan datos obligatorios' }, { status: 400 });
     }
 
-    // 1. Obtener Hash Anterior para ventas_historial (Ley Antifraude)
-    const { data: lastHash } = await supabase
-      .from('ventas_historial')
-      .select('hash_actual')
-      .order('id', { ascending: false })
-      .limit(1)
-      .single();
-      
-    const hash_anterior = lastHash?.hash_actual || "GENESIS";
-    const fecha = new Date();
-    
-    // Formatear items para ventas_historial
+    // Formatear items para ventas_historial posterior en TPV
     const productosParaVenta = items.map((i: any) => ({
       id: i.id,
       nombre: i.nombre,
@@ -47,10 +35,7 @@ export async function POST(request: Request) {
       });
     }
 
-    const str_data = `${fecha.toISOString()}-${total_final}-${hash_anterior}`;
-    const hash_actual = crypto.createHash('sha256').update(str_data).digest('hex');
-
-    // 2. Resolver Cliente y Puntos
+    // 1. Resolver Cliente y Puntos / Dirección
     let id_cliente = cliente_id;
     let nuevo_saldo_puntos = 0;
     
@@ -58,106 +43,71 @@ export async function POST(request: Request) {
     if (!id_cliente && telefono) {
       const { data: existingClients } = await supabase
         .from('clientes')
-        .select('id, puntos')
+        .select('id, puntos, direccion')
         .eq('telefono', telefono)
         .limit(1);
         
       if (existingClients && existingClients.length > 0) {
         id_cliente = existingClients[0].id;
-        nuevo_saldo_puntos = (existingClients[0].puntos || 0) - (puntos_usados || 0) + (puntos_ganados || 0);
+        nuevo_saldo_puntos = (existingClients[0].puntos || 0); // No descontamos puntos aún, se hace al confirmar en TPV
+        
+        // Si hay dirección en el checkout, la actualizamos en el cliente
+        if (direccion && direccion.trim() !== "") {
+           await supabase.from('clientes').update({ direccion: direccion }).eq('id', id_cliente);
+        }
       } else {
         const { data: newClient } = await supabase.from('clientes').insert({
           nombre_dueno: cliente,
           telefono: telefono,
           direccion: direccion || '',
           metodo_contacto: 'WhatsApp',
-          puntos: puntos_ganados,
+          puntos: 0, // Se sumarán al confirmar en TPV
           servicio_domicilio: metodo_entrega === 'Envío a domicilio'
         }).select('id').single();
         if (newClient) {
           id_cliente = newClient.id;
-          nuevo_saldo_puntos = puntos_ganados;
         }
       }
     } else if (id_cliente) {
       // Cliente logueado
       const { data: cliInfo } = await supabase.from('clientes').select('puntos').eq('id', id_cliente).single();
       const puntos_actuales = cliInfo?.puntos || 0;
-      nuevo_saldo_puntos = puntos_actuales - (puntos_usados || 0) + (puntos_ganados || 0);
+      nuevo_saldo_puntos = puntos_actuales; // No descontamos aún
+      
+      // Actualizar dirección si la puso en checkout
+      if (direccion && direccion.trim() !== "") {
+          await supabase.from('clientes').update({ direccion: direccion }).eq('id', id_cliente);
+      }
     }
 
-    // Actualizar puntos del cliente
-    if (id_cliente) {
-      await supabase.from('clientes').update({ puntos: nuevo_saldo_puntos }).eq('id', id_cliente);
-    }
-
-    // 3. Registrar Venta en Historial
-    const metodoLog = `${metodo_pago} (WEB)`;
+    // 2. Preparar los datos técnicos para el TPV
+    const metadata = {
+      items: productosParaVenta,
+      puntos_usados: puntos_usados || 0,
+      puntos_ganados: puntos_ganados || 0,
+      coste_envio: coste_envio || 0,
+      metodo_pago: metodo_pago,
+      total_final: total_final,
+      direccion: direccion || '',
+      metodo_entrega: metodo_entrega,
+      cliente_id: id_cliente
+    };
     
-    // Como el pago se hace a posteriori, se guarda como deuda
-    const estadoVenta = 'Deuda';
-    const pendiente = total_final;
-    const pagado = 0;
+    const notasLimpias = notas || `Pedido Web - Pago: ${metodo_pago}`;
+    const prefijo = metodo_entrega === 'Envío a domicilio' ? `[DOMICILIO]` : `[RECOGIDA TIENDA]`;
+    const notasConMetadatos = `${prefijo} ${notasLimpias}\n[---METADATA---]${JSON.stringify(metadata)}[---/METADATA---]`;
 
-    const { error: errorVenta } = await supabase
-      .from('ventas_historial')
-      .insert({
-        fecha: fecha.toLocaleString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).replace(',', ''),
-        productos: productosParaVenta,
-        total: total_final,
-        pagado: pagado,
-        pendiente: pendiente,
-        metodo_pago: metodoLog, 
-        cliente_deuda: cliente, 
-        puntos_ganados: puntos_ganados || 0,
-        puntos_usados: puntos_usados || 0,
-        descuento_global: 0,
-        hash_anterior: hash_anterior,
-        hash_actual: hash_actual,
-        estado: estadoVenta,
-        cliente_vip_nombre: cliente // Para que quede registrado el cliente
-      });
-
-    if (errorVenta) {
-      console.error("Error insertando venta:", errorVenta);
-    }
-
-    // 4. Crear el pedido para logística (reparto o recogida)
+    // 3. Crear el encargo web en TPV
     const detalle_pedido = items.map((i: any) => `${i.cantidad}x ${i.nombre}`).join(' + ');
-    let notasFinales = notas || `Pedido Web - Pago: ${metodo_pago}`;
     
-    // SIEMPRE insertamos en encargos_clientes para que aparezca en "Pedidos Web"
     await supabase.from('encargos_clientes').insert({
       nombre_cliente: cliente,
       telefono: telefono || '',
       detalle_pedido: detalle_pedido,
-      notas: metodo_entrega === 'Envío a domicilio' ? `[DOMICILIO] ${notasFinales}` : `[RECOGIDA TIENDA] ${notasFinales}`,
-      estado: 'Pendiente',
+      notas: notasConMetadatos,
+      estado: 'Recibido',
       origen: 'Web'
     });
-
-    // ADICIONALMENTE, si es a domicilio, lo insertamos en pedidos_domicilio para el gestor de repartos
-    if (metodo_entrega === 'Envío a domicilio') {
-      await supabase.from('pedidos_domicilio').insert({
-        nombre_cliente: cliente,
-        telefono: telefono || '',
-        direccion: direccion,
-        detalle_pedido: detalle_pedido,
-        estado: 'Pendiente',
-        notas: notasFinales
-      });
-    }
-
-    // 5. Descontar Stock
-    for (const item of items) {
-      if (item.id) {
-        const { data: prodData } = await supabase.from('productos').select('stock_actual').eq('id', item.id).single();
-        if (prodData) {
-          const newStock = (prodData.stock_actual || 0) - item.cantidad;
-          await supabase.from('productos').update({ stock_actual: newStock }).eq('id', item.id);
-        }
-      }
-    }
 
     return NextResponse.json({ success: true });
   } catch (err: any) {
