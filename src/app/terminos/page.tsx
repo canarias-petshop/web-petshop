@@ -13,11 +13,12 @@ export default function Terminos() {
           <li style={{ marginBottom: '0.5rem' }}><strong>Recogida en Tienda (Santa Cruz de Tenerife):</strong> GRATIS. Podrás pasar a buscar tu pedido el mismo día o al día siguiente laborable.</li>
           <li style={{ marginBottom: '0.5rem' }}><strong>Envío Local (Santa Cruz y cercanías):</strong> 5 €.</li>
           <li style={{ marginBottom: '0.5rem' }}><strong>Envío Resto de Tenerife (Sur/Norte):</strong> 10 €.</li>
-          <li style={{ marginBottom: '0.5rem' }}><strong>Envío GRATIS:</strong> En todos los pedidos que superen los <strong>130 €</strong>.</li>
+          <li style={{ marginBottom: '0.5rem' }}><strong>Envío GRATIS:</strong> En todos los pedidos que superen los <strong>110 €</strong>.</li>
         </ul>
 
         <h2 style={{ fontSize: '1.5rem', color: 'var(--secondary)', marginBottom: '1rem' }}>2. Plazos de Entrega</h2>
-        <p style={{ marginBottom: '2rem' }}>Al ser repartos gestionados directamente por nuestra tienda, intentamos que las entregas locales se realicen en 24/48 horas laborables siempre que haya stock disponible del producto seleccionado.</p>
+        <p style={{ marginBottom: '1rem' }}>Al ser repartos gestionados directamente por nuestra tienda, intentamos que las entregas locales se realicen en 24/48 horas laborables siempre que haya stock disponible del producto seleccionado.</p>
+        <p style={{ marginBottom: '2rem' }}><strong>Importante:</strong> Los pedidos realizados a partir del <strong>jueves a las 20:00h</strong>, así como los realizados en fin de semana, empezarán a gestionarse a partir del lunes siguiente, por lo que su entrega (en caso de no disponer de stock físico inmediato) se efectuará entre el lunes y el martes de la semana entrante.</p>
 
         <h2 style={{ fontSize: '1.5rem', color: 'var(--secondary)', marginBottom: '1rem' }}>3. Devoluciones</h2>
         <p style={{ marginBottom: '2rem' }}>Si te has equivocado de pienso o el producto llega en mal estado, dispones de 14 días naturales para solicitar una devolución o cambio. El producto debe estar cerrado, sin usar y en su embalaje original. Los gastos de envío por la devolución correrán a cargo del cliente salvo que el producto estuviera defectuoso.</p>

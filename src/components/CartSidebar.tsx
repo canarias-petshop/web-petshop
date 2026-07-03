@@ -2,10 +2,27 @@
 
 import { useCart } from '@/context/CartContext';
 import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { AlertCircle } from 'lucide-react';
 
 export default function CartSidebar() {
   const { isCartOpen, setIsCartOpen, items, updateQuantity, total } = useCart();
   const router = useRouter();
+  
+  const [showWeekendWarning, setShowWeekendWarning] = useState(false);
+
+  useEffect(() => {
+    if (isCartOpen) {
+      const now = new Date();
+      const day = now.getDay();
+      const hour = now.getHours();
+      if (day === 6 || day === 0 || day === 5 || (day === 4 && hour >= 20)) {
+        setShowWeekendWarning(true);
+      } else {
+        setShowWeekendWarning(false);
+      }
+    }
+  }, [isCartOpen]);
 
   if (!isCartOpen) return null;
 
@@ -34,6 +51,15 @@ export default function CartSidebar() {
         </div>
 
         <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem' }}>
+          {showWeekendWarning && items.length > 0 && (
+            <div style={{ backgroundColor: '#fff7ed', color: '#c2410c', padding: '0.75rem', borderRadius: '8px', border: '1px solid #fed7aa', marginBottom: '1.5rem', display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.85rem' }}>
+              <AlertCircle size={18} style={{ flexShrink: 0, marginTop: '2px' }} />
+              <div>
+                <strong>Aviso de entrega:</strong> Pedidos desde el jueves a las 20:00h se entregarán entre lunes y martes (si no hay stock inmediato).
+              </div>
+            </div>
+          )}
+          
           {items.length === 0 ? (
             <div style={{ textAlign: 'center', color: 'var(--text-muted)', marginTop: '2rem' }}>
               Tu carrito está vacío.

@@ -15,6 +15,8 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [esPrimeraCompra, setEsPrimeraCompra] = useState(false);
+  const [showWeekendWarning, setShowWeekendWarning] = useState(false);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -60,6 +62,17 @@ export default function CheckoutPage() {
               telefono: user.user_metadata?.telefono || "",
             }));
           }
+
+          // Check if first purchase
+          const { count } = await supabase
+            .from("encargos_clientes")
+            .select("*", { count: 'exact', head: true })
+            .eq("auth_user_id", user.id);
+            
+          if (count === 0) {
+            setEsPrimeraCompra(true);
+          }
+
         }
       } catch (e) {
         console.error(e);
@@ -74,10 +87,18 @@ export default function CheckoutPage() {
     } else {
       loadUser();
     }
+    
+    // Check for weekend warning (Thursday 20:00 to Sunday 23:59)
+    const now = new Date();
+    const day = now.getDay();
+    const hour = now.getHours();
+    if (day === 6 || day === 0 || day === 5 || (day === 4 && hour >= 20)) {
+      setShowWeekendWarning(true);
+    }
   }, [items, router, success]);
 
   // Shipping calculation
-  const isFreeShipping = total >= 130;
+  const isFreeShipping = total >= 110;
   
   let shippingCost = 0;
   if (deliveryMethod === 'Envío a domicilio' && !isFreeShipping) {
@@ -92,8 +113,11 @@ export default function CheckoutPage() {
   const puntosAAplicar = usePoints ? Math.min(puntosDisponibles, maxPuntosPermitidos) : 0;
   const descuentoPuntos = puntosAAplicar * 0.50;
   
-  // Final total includes shipping
-  const finalTotal = total + shippingCost - descuentoPuntos;
+  // Descuento primera compra (10% sobre productos)
+  const descuentoPrimeraCompra = esPrimeraCompra ? (total * 0.10) : 0;
+  
+  // Final total includes shipping and discounts
+  const finalTotal = total - descuentoPrimeraCompra + shippingCost - descuentoPuntos;
   
   const puntosAGanar = Math.floor(finalTotal / 10); // 1 punto por cada 10€ gastados
 
@@ -117,6 +141,7 @@ export default function CheckoutPage() {
         puntos_usados: puntosAAplicar,
         descuento_puntos: descuentoPuntos,
         puntos_ganados: puntosAGanar,
+        descuento_primera_compra: descuentoPrimeraCompra,
         total_original: total,
         total_final: finalTotal
       };
@@ -194,6 +219,16 @@ export default function CheckoutPage() {
     <div className="container" style={{ padding: '3rem 1.5rem' }}>
       <h1 style={{ fontSize: '2.5rem', color: 'var(--text-main)', marginBottom: '2rem' }}>Finalizar Compra</h1>
       
+      {showWeekendWarning && (
+        <div style={{ backgroundColor: '#fff7ed', color: '#c2410c', padding: '1rem 1.5rem', borderRadius: 'var(--radius)', border: '1px solid #fed7aa', marginBottom: '2rem', display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
+          <AlertCircle size={24} style={{ flexShrink: 0, marginTop: '2px' }} />
+          <div>
+            <strong style={{ display: 'block', marginBottom: '0.25rem' }}>Aviso sobre el tiempo de entrega</strong>
+            Los pedidos realizados a partir del jueves a las 20:00h o durante el fin de semana se entregarán <strong>entre el lunes y el martes</strong> de la siguiente semana (en caso de no disponer de stock en tienda).
+          </div>
+        </div>
+      )}
+
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', alignItems: 'flex-start' }}>
         {/* Formulario y Detalles de Envío/Pago */}
         <div style={{ flex: '1 1 600px', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
@@ -267,7 +302,7 @@ export default function CheckoutPage() {
                       <option value="lejos">Distancias largas (Sur, Norte, etc.) - 10.00€</option>
                     </select>
                     <div style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: '#3b82f6' }}>
-                      *Envío gratis en compras superiores a 130€.
+                      *Envío gratis en compras superiores a 110€.
                     </div>
                   </div>
                 </>
@@ -362,6 +397,13 @@ export default function CheckoutPage() {
               <span style={{ color: 'var(--text-muted)' }}>Subtotal</span>
               <span>{total.toFixed(2)} €</span>
             </div>
+            
+            {esPrimeraCompra && descuentoPrimeraCompra > 0 && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#10b981', fontWeight: 500 }}>
+                <span>10% Dto. 1ª Compra</span>
+                <span>-{descuentoPrimeraCompra.toFixed(2)} €</span>
+              </div>
+            )}
             
             {usePoints && descuentoPuntos > 0 && (
               <div style={{ display: 'flex', justifyContent: 'space-between', color: '#10b981', fontWeight: 500 }}>
