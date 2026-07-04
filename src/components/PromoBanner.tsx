@@ -7,7 +7,7 @@ const MESSAGES = [
   { text: '¡10% de descuento en tu primera compra al registrarte!', icon: Sparkles },
   { text: '7% de descuento por la compra de cajas enteras de pouch.', icon: Package },
   { text: 'Programa de Fidelidad: Acumula puntos con tus compras y consigue descuentos.', icon: Star },
-  { text: 'Envío gratuito en pedidos superiores a 130€.', icon: Truck },
+  { text: 'Envío gratuito en pedidos superiores a 110€.', icon: Truck },
 ];
 
 export default function PromoBanner() {

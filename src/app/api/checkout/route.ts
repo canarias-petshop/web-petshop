@@ -7,7 +7,7 @@ export async function POST(request: Request) {
     const { 
       items, cliente, telefono, direccion, notas, 
       metodo_pago, metodo_entrega, auth_user_id, cliente_id,
-      puntos_usados, descuento_puntos, puntos_ganados, total_original, coste_envio, zona_envio, total_final 
+      puntos_usados, descuento_puntos, puntos_ganados, descuento_primera_compra, total_original, coste_envio, zona_envio, total_final 
     } = body;
 
     if (!items || !items.length || !cliente) {
@@ -85,6 +85,7 @@ export async function POST(request: Request) {
       items: productosParaVenta,
       puntos_usados: puntos_usados || 0,
       puntos_ganados: puntos_ganados || 0,
+      descuento_primera_compra: descuento_primera_compra || 0,
       coste_envio: coste_envio || 0,
       metodo_pago: metodo_pago,
       total_final: total_final,
@@ -93,7 +94,11 @@ export async function POST(request: Request) {
       cliente_id: id_cliente
     };
     
-    const notasLimpias = notas || `Pedido Web - Pago: ${metodo_pago}`;
+    let notasLimpias = notas || `Pedido Web - Pago: ${metodo_pago}`;
+    if (descuento_primera_compra && descuento_primera_compra > 0) {
+      notasLimpias += `\n* Dto. Primera Compra Aplicado (-${descuento_primera_compra.toFixed(2)}€)`;
+    }
+    
     const prefijo = metodo_entrega === 'Envío a domicilio' ? `[DOMICILIO]` : `[RECOGIDA TIENDA]`;
     const notasConMetadatos = `${prefijo} ${notasLimpias}\n[---METADATA---]${JSON.stringify(metadata)}[---/METADATA---]`;
 

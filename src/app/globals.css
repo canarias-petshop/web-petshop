@@ -111,7 +111,7 @@ a {
 
 /* Hero Section */
 .hero {
-  padding: 13rem 0;
+  padding: 18rem 0;
   text-align: center;
   background-image: url('/tropical_animals_bg.png?v=8');
   background-size: cover;
@@ -252,7 +252,7 @@ a {
 
   /* Hero Section */
   .hero {
-    padding: 4rem 1rem;
+    padding: 7rem 1rem;
   }
   
   .hero-box {
