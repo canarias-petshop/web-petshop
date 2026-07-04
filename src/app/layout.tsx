@@ -37,7 +37,7 @@ export default function RootLayout({
           
           <footer style={{ backgroundColor: '#1f2937', color: '#f3f4f6', paddingTop: '4rem', paddingBottom: '2rem', marginTop: 'auto' }}>
             <div className="container">
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '3rem', marginBottom: '3rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))', gap: '3rem', marginBottom: '3rem' }}>
                 
                 {/* Columna 1: Marca y Sobre nosotros */}
                 <div>

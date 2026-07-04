@@ -231,7 +231,7 @@ export default function CheckoutPage() {
 
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', alignItems: 'flex-start' }}>
         {/* Formulario y Detalles de Envío/Pago */}
-        <div style={{ flex: '1 1 600px', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+        <div style={{ flex: '1 1 min(100%, 600px)', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
           
           {/* Si no está logueado, mostrar un aviso */}
           {!user && (
@@ -349,7 +349,7 @@ export default function CheckoutPage() {
         </div>
         
         {/* Resumen de Compra */}
-        <div style={{ flex: '1 1 350px', backgroundColor: 'var(--surface)', padding: '2rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)', position: 'sticky', top: '120px' }}>
+        <div style={{ flex: '1 1 min(100%, 350px)', backgroundColor: 'var(--surface)', padding: '2rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)', position: 'sticky', top: '120px' }}>
           <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <ShoppingBag size={20} color="var(--primary)" /> Resumen de Compra
           </h2>

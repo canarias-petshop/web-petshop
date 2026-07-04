@@ -41,7 +41,7 @@ export default async function Home() {
           <h2 style={{ fontSize: '2rem', color: 'var(--text-main)' }}>Ofertas y Destacados</h2>
           <Link href="/catalogo" style={{ color: 'var(--primary)', fontWeight: 600 }}>Ir a la tienda →</Link>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '2rem' }}>
           {/* Tarjeta Promocional 1 */}
           <div style={{ backgroundColor: '#ffe4e6', borderRadius: 'var(--radius)', padding: '2.5rem 2rem', display: 'flex', flexDirection: 'column', justifyContent: 'center', position: 'relative', overflow: 'hidden', border: '1px solid #fda4af' }}>
             <span style={{ position: 'absolute', top: '15px', right: '15px', background: '#e11d48', color: 'white', padding: '4px 10px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold' }}>-7% DTO</span>
@@ -68,7 +68,7 @@ export default async function Home() {
           <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', marginTop: '1rem' }}>Todo lo que necesitas para una dieta sana y equilibrada.</p>
         </div>
         
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '2rem' }}>
           <div style={{ backgroundColor: 'var(--surface)', padding: '2rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)', textAlign: 'center' }}>
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🥩</div>
             <h3 style={{ fontSize: '1.5rem', color: 'var(--secondary)', marginBottom: '1rem' }}>Pienso y Carne Fresca</h3>
