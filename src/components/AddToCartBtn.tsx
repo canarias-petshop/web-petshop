@@ -7,34 +7,17 @@ export default function AddToCartBtn({ product, mini = false }: { product: Omit<
 
   return (
     <button 
-      className="btn btn-primary"
+      className={`btn btn-primary ${mini ? 'mini-btn' : 'full-btn'}`}
       onClick={() => addToCart(product)}
       style={mini ? {
-        backgroundColor: '#E84D8A',
-        color: 'white',
         padding: '4px 10px',
-        borderRadius: '6px',
-        fontWeight: 'bold',
         fontSize: '0.8rem',
-        border: 'none',
-        cursor: 'pointer',
-        boxShadow: '0 2px 4px rgba(232, 77, 138, 0.3)',
-        transition: 'all 0.2s ease'
       } : {
-        backgroundColor: '#E84D8A',
-        color: 'white',
-        padding: '10px 20px',
-        borderRadius: '8px',
-        fontWeight: 'bold',
-        fontSize: '1.1rem',
-        border: 'none',
-        cursor: 'pointer',
         width: '100%',
-        boxShadow: '0 4px 6px rgba(232, 77, 138, 0.3)',
-        transition: 'all 0.2s ease'
+        textTransform: 'uppercase',
       }}
     >
-      {mini ? '+ AÑADIR' : 'AÑADIR AL CARRITO'}
+      {mini ? '+ AÑADIR' : 'Añadir al carrito'}
     </button>
   );
 }
