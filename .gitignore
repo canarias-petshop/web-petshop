@@ -39,3 +39,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Scripts locales de utilidad (no subir a GitHub)
+check_*.js
+test_*.js
+enrich_products.js
+get_policies.js
+count_prod.js
+implementation_plan.md
+CLAUDE.md

@@ -46,7 +46,7 @@ export default function RootLayout({
           <nav className="navbar">
             <div className="container navbar-content">
               <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Image src="/LOGO.jpg" alt="Animalarium" width={220} height={110} style={{ objectFit: 'contain' }} />
+                <Image src="/LOGO.png" alt="Animalarium" width={220} height={110} style={{ objectFit: 'contain' }} />
               </Link>
               <div className="nav-links">
                 <Link href="/catalogo" className="nav-link">Catálogo</Link>
