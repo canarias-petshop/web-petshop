@@ -7,8 +7,31 @@ import NavbarCart from "@/components/NavbarCart";
 import WhatsAppButton from "@/components/WhatsAppButton";
 
 export const metadata: Metadata = {
-  title: "Animalarium | Tu Tienda Local",
-  description: "Compra piensos, carnes y accesorios para tu mascota. Recogida en tienda y entrega rápida.",
+  title: "Animalarium | Tienda de Alimentación Natural para Mascotas en Tenerife",
+  description: "Especialistas en alimentación natural para perros y gatos en Santa Cruz de Tenerife. Piensos premium, comida húmeda y snacks naturales. Recogida en tienda y entrega rápida a domicilio.",
+  keywords: ["tienda mascotas tenerife", "pienso natural perros", "alimentación natural gatos", "animalarium tenerife", "tienda animales santa cruz", "comida natural mascotas", "pienso premium tenerife"],
+  authors: [{ name: "Animalarium" }],
+  creator: "Animalarium",
+  metadataBase: new URL("https://animalariumtenerife.es"),
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "Animalarium | Alimentación Natural para Mascotas en Tenerife",
+    description: "Tu tienda de confianza para la alimentación natural de perros y gatos. Piensos premium, húmedos y snacks naturales con entrega a domicilio en Tenerife.",
+    url: "https://animalariumtenerife.es",
+    siteName: "Animalarium",
+    locale: "es_ES",
+    type: "website",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
+  },
 };
 
 export default function RootLayout({
@@ -28,7 +51,7 @@ export default function RootLayout({
               <div className="nav-links">
                 <Link href="/catalogo" className="nav-link">Catálogo</Link>
                 <Link href="/mi-cuenta" className="nav-link">Mi Cuenta</Link>
-                <Link href="#" className="nav-link">Contacto</Link>
+                <Link href="/contacto" className="nav-link">Contacto</Link>
                 <NavbarCart />
               </div>
             </div>
