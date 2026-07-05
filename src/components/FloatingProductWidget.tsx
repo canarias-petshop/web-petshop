@@ -58,14 +58,14 @@ export default function FloatingProductWidget({ productos }: { productos: any[] 
         border: '1px solid var(--border)',
         borderRadius: 'var(--radius)',
         boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
-        padding: '1rem',
-        width: '320px',
+        padding: '0.75rem',
+        width: 'min(280px, 70vw)',
         zIndex: 9999,
         transform: isVisible ? 'translateY(0) scale(1)' : 'translateY(150%) scale(0.5)',
         opacity: isVisible ? 1 : 0,
         transition: 'transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease',
         display: 'flex',
-        gap: '1rem',
+        gap: '0.75rem',
         alignItems: 'center'
       }}
     >
@@ -94,8 +94,8 @@ export default function FloatingProductWidget({ productos }: { productos: any[] 
       </button>
 
       <div style={{
-        width: '75px',
-        height: '75px',
+        width: '60px',
+        height: '60px',
         flexShrink: 0,
         backgroundColor: '#fff',
         borderRadius: 'var(--radius)',
