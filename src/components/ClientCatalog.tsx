@@ -574,13 +574,13 @@ function CrossSellPopup({ targetProduct, allProducts, onClose }: { targetProduct
       position: 'fixed',
       bottom: '20px',
       right: '20px',
-      width: '320px',
+      width: 'min(280px, 70vw)',
       backgroundColor: 'var(--surface)',
       borderRadius: 'var(--radius)',
       boxShadow: 'var(--shadow-lg)',
       border: '2px solid var(--primary)',
       zIndex: 9999,
-      padding: '1.2rem',
+      padding: '1rem',
       animation: 'slideUp 0.3s ease-out'
     }}>
       <button 
