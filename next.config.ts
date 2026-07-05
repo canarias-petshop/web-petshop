@@ -14,6 +14,16 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
+        source: '/tienda-online-de-mascotas',
+        destination: '/catalogo',
+        permanent: true,
+      },
+      {
+        source: '/tu-tienda-local',
+        destination: '/',
+        permanent: true,
+      },
+      {
         source: '/tienda',
         destination: '/catalogo',
         permanent: true,
