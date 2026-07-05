@@ -231,6 +231,12 @@ a {
 
 /* Responsive Design (Mobile & Tablets) */
 @media (max-width: 768px) {
+  /* Catalog Layout */
+  .catalog-layout {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
   /* Navbar */
   .navbar-content {
     flex-direction: column;
@@ -299,6 +305,25 @@ a {
 }
 
 @media (max-width: 480px) {
+  /* Grid Layout */
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    padding: 2rem 0;
+  }
+  
+  .card-content {
+    padding: 0.75rem;
+  }
+  
+  .card-title {
+    font-size: 0.9rem;
+  }
+  
+  .card-price {
+    font-size: 1.1rem;
+  }
+
   /* Forms & Filters */
   .filter-section {
     width: 100%;
