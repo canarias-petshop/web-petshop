@@ -43,7 +43,7 @@ export default async function Home() {
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '2rem' }}>
           {/* Tarjeta Promocional 1 */}
-          <div style={{ backgroundColor: '#ffe4e6', borderRadius: 'var(--radius)', padding: '2.5rem 2rem', display: 'flex', flexDirection: 'column', justifyContent: 'center', position: 'relative', overflow: 'hidden', border: '1px solid #fda4af' }}>
+          <div style={{ backgroundColor: '#ffe4e6', borderRadius: 'var(--radius)', padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'center', position: 'relative', overflow: 'hidden', border: '1px solid #fda4af' }}>
             <span style={{ position: 'absolute', top: '15px', right: '15px', background: '#e11d48', color: 'white', padding: '4px 10px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold' }}>-7% DTO</span>
             <h3 style={{ fontSize: '1.8rem', color: '#be123c', marginBottom: '0.5rem', zIndex: 2, fontWeight: 700 }}>Cajas de Húmedo</h3>
             <p style={{ color: '#881337', marginBottom: '1.5rem', zIndex: 2, fontSize: '1.1rem' }}>Llévate la caja entera (pouches o latas) y ahorra al instante.</p>
@@ -51,7 +51,7 @@ export default async function Home() {
           </div>
           
           {/* Tarjeta Promocional 2 */}
-          <div style={{ backgroundColor: '#e0f2fe', borderRadius: 'var(--radius)', padding: '2.5rem 2rem', display: 'flex', flexDirection: 'column', justifyContent: 'center', position: 'relative', overflow: 'hidden', border: '1px solid #7dd3fc' }}>
+          <div style={{ backgroundColor: '#e0f2fe', borderRadius: 'var(--radius)', padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'center', position: 'relative', overflow: 'hidden', border: '1px solid #7dd3fc' }}>
             <span style={{ position: 'absolute', top: '15px', right: '15px', background: '#0284c7', color: 'white', padding: '4px 10px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold' }}>Novedad</span>
             <h3 style={{ fontSize: '1.8rem', color: '#0369a1', marginBottom: '0.5rem', zIndex: 2, fontWeight: 700 }}>Snacks Naturales</h3>
             <p style={{ color: '#0c4a6e', marginBottom: '1.5rem', zIndex: 2, fontSize: '1.1rem' }}>Premia a tu mascota con los mejores ingredientes 100% naturales.</p>
@@ -69,19 +69,19 @@ export default async function Home() {
         </div>
         
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '2rem' }}>
-          <div style={{ backgroundColor: 'var(--surface)', padding: '2rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)', textAlign: 'center' }}>
+          <div style={{ backgroundColor: 'var(--surface)', padding: '1.5rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)', textAlign: 'center' }}>
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🥩</div>
             <h3 style={{ fontSize: '1.5rem', color: 'var(--secondary)', marginBottom: '1rem' }}>Pienso y Carne Fresca</h3>
             <p style={{ color: 'var(--text-muted)' }}>Trabajamos con las mejores marcas del mercado como Amanova. Fórmulas grain-free, hipoalergénicas y ricas en carne fresca para perros y gatos.</p>
           </div>
           
-          <div style={{ backgroundColor: 'var(--surface)', padding: '2rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)', textAlign: 'center' }}>
+          <div style={{ backgroundColor: 'var(--surface)', padding: '1.5rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)', textAlign: 'center' }}>
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🦴</div>
             <h3 style={{ fontSize: '1.5rem', color: 'var(--secondary)', marginBottom: '1rem' }}>Snacks Naturales</h3>
             <p style={{ color: 'var(--text-muted)' }}>Premios saludables y funcionales. Desde sticks dentales hasta bocaditos gourmet para educar o mimar a tu mejor amigo.</p>
           </div>
           
-          <div style={{ backgroundColor: 'var(--surface)', padding: '2rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)', textAlign: 'center' }}>
+          <div style={{ backgroundColor: 'var(--surface)', padding: '1.5rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)', textAlign: 'center' }}>
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🐾</div>
             <h3 style={{ fontSize: '1.5rem', color: 'var(--secondary)', marginBottom: '1rem' }}>Asesoramiento Personalizado</h3>
             <p style={{ color: 'var(--text-muted)' }}>¿No sabes qué pienso elegir? Ven a visitarnos a la tienda física y te asesoraremos en función de la raza, edad y necesidades de tu mascota.</p>

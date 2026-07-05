@@ -477,7 +477,7 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
                   }}
                 >
                   
-                  <div style={{ position: 'relative', height: '220px', padding: '1rem', backgroundColor: '#ffffff', borderBottom: '1px solid var(--surface-hover)' }}>
+                  <div style={{ position: 'relative', height: '160px', padding: '0.5rem', backgroundColor: '#ffffff', borderBottom: '1px solid var(--surface-hover)' }}>
                     <div style={{
                       width: '100%', height: '100%',
                       backgroundImage: prod.sku 
@@ -497,19 +497,19 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
                     )}
                   </div>
 
-                  <div className="card-content" style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, padding: '1.25rem' }}>
+                  <div className="card-content" style={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
                     <div className="card-title" style={{ fontSize: '1rem', lineHeight: '1.3', marginBottom: '0.5rem', fontWeight: '600' }}>
                       {prod.nombre}
                     </div>
                     
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '1rem' }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '0.5rem' }}>
                       {prod.mascota && <span style={{fontSize: '0.7rem', padding: '2px 6px', background: 'var(--surface-hover)', borderRadius: '4px'}}>{prod.mascota}</span>}
                       {prod.gama && <span style={{fontSize: '0.7rem', padding: '2px 6px', background: 'var(--surface-hover)', borderRadius: '4px', border: '1px solid var(--border)'}}>{prod.gama}</span>}
                       {prod.edad && prod.edad !== 'Todas' && <span style={{fontSize: '0.7rem', padding: '2px 6px', background: 'var(--surface-hover)', borderRadius: '4px'}}>{prod.edad}</span>}
                       {prod.necesidad_especial && prod.necesidad_especial !== 'Ninguna' && <span style={{fontSize: '0.7rem', padding: '2px 6px', background: 'var(--surface-hover)', borderRadius: '4px', color: 'var(--primary)'}}>{prod.necesidad_especial}</span>}
                     </div>
 
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1rem', lineHeight: '1.4', flexGrow: 1 }}>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.5rem', lineHeight: '1.4', flexGrow: 1 }}>
                       {prod.caracteristicas && (
                         <div style={{ marginBottom: '0.5rem' }}>
                           {prod.caracteristicas}
@@ -535,7 +535,7 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
                       </div>
                     </div>
                     
-                    <div style={{ marginTop: '1rem' }}>
+                    <div style={{ marginTop: '0.5rem' }}>
                       <AddToCartBtn product={{...prod, precio: finalPrice, precio_pvp: finalPrice}} />
                     </div>
                   </div>

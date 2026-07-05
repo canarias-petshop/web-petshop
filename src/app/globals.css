@@ -258,19 +258,21 @@ a {
 
   /* Hero Section */
   .hero {
-    padding: 7rem 1rem;
+    padding: 3rem 1rem;
   }
   
   .hero-box {
-    padding: 1.5rem;
+    padding: 1rem;
+    max-width: 90%;
   }
   
   .hero h1 {
-    font-size: 2rem !important;
+    font-size: 1.5rem !important;
   }
   
   .hero p {
-    font-size: 1.1rem !important;
+    font-size: 1rem !important;
+    margin-bottom: 1rem;
   }
 
   /* Footer */
@@ -305,6 +307,12 @@ a {
 }
 
 @media (max-width: 480px) {
+  /* Buttons */
+  .btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+
   /* Grid Layout */
   .grid {
     grid-template-columns: repeat(2, 1fr);
