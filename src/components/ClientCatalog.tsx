@@ -498,26 +498,21 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
                   </div>
 
                   <div className="card-content" style={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
-                    <div className="card-title" style={{ fontSize: '1rem', lineHeight: '1.3', marginBottom: '0.5rem', fontWeight: '600' }}>
+                    <div className="card-title" style={{ fontSize: '1rem', lineHeight: '1.2', marginBottom: '0.25rem', fontWeight: '600' }}>
                       {prod.nombre}
                     </div>
                     
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '0.5rem' }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '0.25rem' }}>
                       {prod.mascota && <span style={{fontSize: '0.7rem', padding: '2px 6px', background: 'var(--surface-hover)', borderRadius: '4px'}}>{prod.mascota}</span>}
                       {prod.gama && <span style={{fontSize: '0.7rem', padding: '2px 6px', background: 'var(--surface-hover)', borderRadius: '4px', border: '1px solid var(--border)'}}>{prod.gama}</span>}
                       {prod.edad && prod.edad !== 'Todas' && <span style={{fontSize: '0.7rem', padding: '2px 6px', background: 'var(--surface-hover)', borderRadius: '4px'}}>{prod.edad}</span>}
                       {prod.necesidad_especial && prod.necesidad_especial !== 'Ninguna' && <span style={{fontSize: '0.7rem', padding: '2px 6px', background: 'var(--surface-hover)', borderRadius: '4px', color: 'var(--primary)'}}>{prod.necesidad_especial}</span>}
                     </div>
 
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.5rem', lineHeight: '1.4', flexGrow: 1 }}>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.25rem', lineHeight: '1.3', flexGrow: 1 }}>
                       {prod.caracteristicas && (
                         <div style={{ marginBottom: '0.5rem' }}>
                           {prod.caracteristicas}
-                        </div>
-                      )}
-                      {prod.sku && (
-                        <div style={{ fontSize: '0.75rem', opacity: 0.8, marginTop: 'auto' }}>
-                          Ref: {prod.sku}
                         </div>
                       )}
                     </div>
