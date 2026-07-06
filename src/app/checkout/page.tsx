@@ -67,7 +67,8 @@ export default function CheckoutPage() {
           const { count } = await supabase
             .from("encargos_clientes")
             .select("*", { count: 'exact', head: true })
-            .eq("auth_user_id", user.id);
+            .eq("auth_user_id", user.id)
+            .neq("estado", "Cancelado");
             
           if (count === 0) {
             setEsPrimeraCompra(true);
@@ -178,7 +179,7 @@ export default function CheckoutPage() {
         <CheckCircle size={64} color="#10b981" style={{ marginBottom: '1.5rem' }} />
         <h1 style={{ fontSize: '2.5rem', color: 'var(--text-main)', marginBottom: '1rem' }}>¡Pedido Confirmado!</h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem', maxWidth: '600px', marginBottom: '2rem' }}>
-          Hemos recibido tu pedido correctamente. Nos pondremos en contacto contigo para confirmar la entrega.
+          Hemos recibido tu pedido correctamente en nuestra tienda. Lo estamos preparando y en breve nos pondremos en contacto contigo por WhatsApp para confirmar la disponibilidad y coordinar la entrega o el pago.
         </p>
         
         {paymentMethod === 'Bizum' && (
