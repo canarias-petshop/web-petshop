@@ -27,7 +27,7 @@ export default function CheckoutPage() {
   });
   
   // Checkout options state
-  const [paymentMethod, setPaymentMethod] = useState("Transferencia");
+  const [paymentMethod, setPaymentMethod] = useState("Tarjeta (Enlace de Pago)");
   const [deliveryMethod, setDeliveryMethod] = useState("Recogida en tienda");
   const [shippingZone, setShippingZone] = useState("cercania"); // 'cercania' (5€) o 'lejos' (10€)
   

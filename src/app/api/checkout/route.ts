@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabase, supabaseAdmin } from '@/lib/supabase';
 
 export async function POST(request: Request) {
   try {
@@ -9,6 +9,10 @@ export async function POST(request: Request) {
       metodo_pago, metodo_entrega, auth_user_id, cliente_id,
       puntos_usados, descuento_puntos, puntos_ganados, descuento_primera_compra, total_original, coste_envio, zona_envio, total_final 
     } = body;
+
+    if (!supabaseAdmin) {
+      return NextResponse.json({ error: 'Error de configuración del servidor' }, { status: 500 });
+    }
 
     if (!items || !items.length || !cliente) {
       return NextResponse.json({ error: 'Faltan datos obligatorios' }, { status: 400 });
@@ -41,7 +45,7 @@ export async function POST(request: Request) {
     
     // Si no está logueado pero dejó teléfono, buscar o crear cliente
     if (!id_cliente && telefono) {
-      const { data: existingClients } = await supabase
+      const { data: existingClients } = await supabaseAdmin
         .from('clientes')
         .select('id, puntos, direccion')
         .eq('telefono', telefono)
@@ -53,10 +57,10 @@ export async function POST(request: Request) {
         
         // Si hay dirección en el checkout, la actualizamos en el cliente
         if (direccion && direccion.trim() !== "") {
-           await supabase.from('clientes').update({ direccion: direccion }).eq('id', id_cliente);
+           await supabaseAdmin.from('clientes').update({ direccion: direccion }).eq('id', id_cliente);
         }
       } else {
-        const { data: newClient } = await supabase.from('clientes').insert({
+        const { data: newClient } = await supabaseAdmin.from('clientes').insert({
           nombre_dueno: cliente,
           telefono: telefono,
           direccion: direccion || '',
@@ -70,13 +74,13 @@ export async function POST(request: Request) {
       }
     } else if (id_cliente) {
       // Cliente logueado
-      const { data: cliInfo } = await supabase.from('clientes').select('puntos').eq('id', id_cliente).single();
+      const { data: cliInfo } = await supabaseAdmin.from('clientes').select('puntos').eq('id', id_cliente).single();
       const puntos_actuales = cliInfo?.puntos || 0;
       nuevo_saldo_puntos = puntos_actuales; // No descontamos aún
       
       // Actualizar dirección si la puso en checkout
       if (direccion && direccion.trim() !== "") {
-          await supabase.from('clientes').update({ direccion: direccion }).eq('id', id_cliente);
+          await supabaseAdmin.from('clientes').update({ direccion: direccion }).eq('id', id_cliente);
       }
     }
 
@@ -102,16 +106,17 @@ export async function POST(request: Request) {
     const prefijo = metodo_entrega === 'Envío a domicilio' ? `[DOMICILIO]` : `[RECOGIDA TIENDA]`;
     const notasConMetadatos = `${prefijo} ${notasLimpias}\n[---METADATA---]${JSON.stringify(metadata)}[---/METADATA---]`;
 
-    // 3. Crear el encargo web en TPV
+    // 3. Crear el Encargo en la base de datos (con auth_user_id para el descuento)
     const detalle_pedido = items.map((i: any) => `${i.cantidad}x ${i.nombre}`).join(' + ');
     
-    await supabase.from('encargos_clientes').insert({
+    const { data: newOrder, error } = await supabaseAdmin.from('encargos_clientes').insert({
       nombre_cliente: cliente,
       telefono: telefono || '',
       detalle_pedido: detalle_pedido,
       notas: notasConMetadatos,
       estado: 'Recibido',
-      origen: 'Web'
+      origen: 'Web',
+      auth_user_id: auth_user_id || null
     });
 
     return NextResponse.json({ success: true });

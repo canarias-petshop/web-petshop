@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase, anonSupabase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase";
 import { LogOut, User, Gift, PawPrint, Calendar, Scissors, Info, Package, Clock } from "lucide-react";
 
 export default function MiCuentaPage() {
@@ -23,8 +23,8 @@ export default function MiCuentaPage() {
 
         setUser(user);
 
-        // Fetch client data, pets, and their appointments using anon client
-        const { data: clientData, error: clientError } = await anonSupabase
+        // Fetch client data, pets, and their appointments using supabase
+        const { data: clientData, error: clientError } = await supabase
           .from("clientes")
           .select("*, mascotas(*, citas(*))")
           .eq("auth_user_id", user.id)
@@ -38,7 +38,7 @@ export default function MiCuentaPage() {
           // Fetch user orders (pedidos)
           if (clientData.telefono || user.user_metadata?.telefono) {
             const tel = clientData.telefono || user.user_metadata?.telefono;
-            const { data: pedidosData } = await anonSupabase
+            const { data: pedidosData } = await supabase
               .from("encargos_clientes")
               .select("*")
               .eq("telefono", tel)
