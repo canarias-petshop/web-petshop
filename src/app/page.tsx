@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import PromoBanner from '@/components/PromoBanner';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase';
 import FloatingProductWidget from '@/components/FloatingProductWidget';
 import FeaturedProductsGrid from '@/components/FeaturedProductsGrid';
 
@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   // Fetch random subset or all web products for the widget
-  const { data: productos, error } = await supabase
+  const { data: productos, error } = await supabaseAdmin!
     .from('productos')
     .select('*')
     .not('familia', 'is', null)

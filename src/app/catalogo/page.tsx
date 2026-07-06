@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase';
 import ClientCatalog from '@/components/ClientCatalog';
 import PromoBanner from '@/components/PromoBanner';
 
@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function CatalogoPage() {
   // Fetch products that have a 'familia' (Category) assigned for the Web
-  const { data: productos, error } = await supabase
+  const { data: productos, error } = await supabaseAdmin!
     .from('productos')
     .select('*')
     .not('familia', 'is', null)
