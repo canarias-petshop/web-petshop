@@ -8,7 +8,7 @@ import {
   restNotificationOutputFormatter,
 } from 'redsys-easy';
 
-const secretKey = process.env.REDSYS_SECRET_KEY || '';
+const secretKey = process.env.REDSYS_SECRET_KEY || 'sq7HjrUOBfKmC576ILgskD5srU870gJ7';
 const isTest = process.env.REDSYS_ENV === 'test';
 
 const {
