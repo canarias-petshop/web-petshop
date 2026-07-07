@@ -227,15 +227,19 @@ export default function CheckoutPage() {
         {/* Formulario y Detalles de Envío/Pago */}
         <div style={{ flex: '1 1 min(100%, 600px)', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
           
-          {/* Si no está logueado, mostrar un aviso */}
-          {!user && (
-            <div style={{ backgroundColor: '#eff6ff', color: '#1e40af', padding: '1.25rem', borderRadius: 'var(--radius)', border: '1px solid #bfdbfe', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <AlertCircle size={24} />
-              <div>
-                <strong>¿Ya tienes cuenta?</strong> <a href="/login" style={{ textDecoration: 'underline', fontWeight: 600 }}>Inicia sesión</a> para acumular puntos y canjear descuentos. Puedes continuar como invitado si lo prefieres.
-              </div>
+          {!user ? (
+            <div style={{ backgroundColor: '#eff6ff', color: '#1e40af', padding: '2.5rem', borderRadius: 'var(--radius)', border: '1px solid #bfdbfe', textAlign: 'center', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+              <AlertCircle size={48} style={{ marginBottom: '1rem' }} />
+              <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem', fontWeight: 'bold' }}>Identificación Requerida</h2>
+              <p style={{ marginBottom: '1.5rem', fontSize: '1.1rem', maxWidth: '400px' }}>
+                Para poder realizar un pedido de forma segura y acumular puntos en tu ficha de cliente, necesitas iniciar sesión o crear una cuenta gratuita.
+              </p>
+              <button className="btn btn-primary" onClick={() => router.push('/login')} style={{ padding: '0.75rem 2rem', fontSize: '1.1rem' }}>
+                Iniciar Sesión / Registrarse
+              </button>
             </div>
-          )}
+          ) : (
+            <>
 
           {/* Opciones de Entrega */}
           <div style={{ backgroundColor: 'var(--surface)', padding: '2rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)' }}>
@@ -335,6 +339,8 @@ export default function CheckoutPage() {
               </label>
             </div>
           </div>
+          </>
+          )}
         </div>
         
         {/* Resumen de Compra */}
