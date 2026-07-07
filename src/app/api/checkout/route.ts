@@ -6,7 +6,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { 
       items, cliente, telefono, direccion, notas, 
-      metodo_pago, metodo_entrega, auth_user_id, cliente_id,
+      metodo_pago, metodo_entrega, auth_user_id, email, cliente_id,
       puntos_usados, descuento_puntos, puntos_ganados, descuento_primera_compra, total_original, coste_envio, zona_envio, total_final 
     } = body;
 
@@ -56,17 +56,26 @@ export async function POST(request: Request) {
         nuevo_saldo_puntos = (existingClients[0].puntos || 0); // No descontamos puntos aún, se hace al confirmar en TPV
         
         // Si hay dirección en el checkout, la actualizamos en el cliente
-        if (direccion && direccion.trim() !== "") {
-           await supabaseAdmin.from('clientes').update({ direccion: direccion }).eq('id', id_cliente);
+        // También vinculamos el email y auth_user_id si la ficha antigua no lo tenía
+        const updatePayload: any = {};
+        if (direccion && direccion.trim() !== "") updatePayload.direccion = direccion;
+        if (email) updatePayload.email = email;
+        if (auth_user_id) updatePayload.auth_user_id = auth_user_id;
+
+        if (Object.keys(updatePayload).length > 0) {
+           await supabaseAdmin.from('clientes').update(updatePayload).eq('id', id_cliente);
         }
       } else {
         const { data: newClient } = await supabaseAdmin.from('clientes').insert({
           nombre_dueno: cliente,
           telefono: telefono,
+          email: email || '',
+          auth_user_id: auth_user_id || null,
           direccion: direccion || '',
           metodo_contacto: 'WhatsApp',
           puntos: 0, // Se sumarán al confirmar en TPV
-          servicio_domicilio: metodo_entrega === 'Envío a domicilio'
+          servicio_domicilio: metodo_entrega === 'Envío a domicilio',
+          rgpd_consent: false
         }).select('id').single();
         if (newClient) {
           id_cliente = newClient.id;

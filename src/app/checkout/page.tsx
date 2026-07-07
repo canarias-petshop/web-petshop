@@ -138,6 +138,7 @@ export default function CheckoutPage() {
         zona_envio: shippingZone,
         coste_envio: shippingCost,
         auth_user_id: user?.id,
+        email: user?.email,
         cliente_id: clienteData?.id,
         puntos_usados: puntosAAplicar,
         descuento_puntos: descuentoPuntos,
