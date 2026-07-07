@@ -201,15 +201,7 @@ export default function CheckoutPage() {
           </div>
         )}
         
-        {paymentMethod === 'Efectivo/Tarjeta en tienda' && (
-          <div style={{ backgroundColor: '#fef3c7', border: '1px solid #fde68a', padding: '1.5rem', borderRadius: 'var(--radius)', marginBottom: '2rem', maxWidth: '500px' }}>
-            <h3 style={{ color: '#b45309', fontWeight: 'bold', marginBottom: '0.5rem' }}>Pago en Tienda</h3>
-            <p style={{ color: '#92400e' }}>
-              Podrás pagar en efectivo o con tarjeta al momento de recoger tu pedido en nuestra tienda. Te avisaremos cuando esté listo.
-            </p>
-          </div>
-        )}
-        
+
         <button className="btn btn-primary" onClick={() => router.push('/catalogo')}>
           Volver a la tienda
         </button>
@@ -298,13 +290,16 @@ export default function CheckoutPage() {
                     <select 
                       value={shippingZone} 
                       onChange={e => setShippingZone(e.target.value)}
-                      style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #bfdbfe', backgroundColor: '#ffffff', color: '#1e3a8a' }}
+                      style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #bfdbfe', backgroundColor: '#ffffff', color: '#1e3a8a', marginBottom: '0.5rem' }}
                     >
-                      <option value="cercania">Cercanía (Santa Cruz, Laguna, etc.) - 5.00€</option>
+                      <option value="cercania">Cercanía (Santa Cruz, La Laguna, Tegueste, El Rosario) - 5.00€</option>
                       <option value="lejos">Distancias largas (Sur, Norte, etc.) - 10.00€</option>
                     </select>
-                    <div style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: '#3b82f6' }}>
+                    <div style={{ fontSize: '0.75rem', color: '#3b82f6', marginBottom: '0.5rem' }}>
                       *Envío gratis en compras superiores a 110€.
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: '#b45309', backgroundColor: '#fffbeb', padding: '0.5rem', borderRadius: '4px', border: '1px solid #fde68a' }}>
+                      <strong>⚠️ Importante:</strong> Se verificará la dirección de entrega introducida. Si la zona seleccionada no se corresponde con la dirección real (código postal), se ajustará el coste del envío al enviarte el enlace de pago.
                     </div>
                   </div>
                 </>
@@ -336,14 +331,6 @@ export default function CheckoutPage() {
                 <div>
                   <div style={{ fontWeight: 600 }}>Bizum</div>
                   <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Te enviaremos las instrucciones y el número por WhatsApp al confirmar stock.</div>
-                </div>
-              </label>
-              
-              <label style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', border: '1px solid var(--border)', borderRadius: '12px', cursor: 'pointer', backgroundColor: paymentMethod === 'Efectivo/Tarjeta en tienda' ? '#fdf2f8' : 'transparent', borderColor: paymentMethod === 'Efectivo/Tarjeta en tienda' ? 'var(--primary)' : 'var(--border)' }}>
-                <input type="radio" name="payment" checked={paymentMethod === 'Efectivo/Tarjeta en tienda'} onChange={() => setPaymentMethod('Efectivo/Tarjeta en tienda')} style={{ accentColor: 'var(--primary)', width: '18px', height: '18px' }} />
-                <div>
-                  <div style={{ fontWeight: 600 }}>Pago al recoger en tienda</div>
-                  <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Solo aplicable si has seleccionado "Recogida en tienda". Paga en efectivo o tarjeta.</div>
                 </div>
               </label>
             </div>
