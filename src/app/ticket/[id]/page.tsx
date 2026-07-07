@@ -77,12 +77,8 @@ export default async function TicketPage({ params, searchParams }: { params: Pro
 
             <div className="border-t-2 border-dashed border-gray-300 pt-4 space-y-2 font-mono text-sm">
               <div className="flex justify-between">
-                <span>BASE IMPONIBLE</span>
-                <span>{(meta.items.reduce((acc: number, item: any) => acc + (item.cantidad * item.precio), 0) / 1.07).toFixed(2)} €</span>
-              </div>
-              <div className="flex justify-between">
-                <span>IGIC (7%)</span>
-                <span>{(meta.items.reduce((acc: number, item: any) => acc + (item.cantidad * item.precio), 0) - (meta.items.reduce((acc: number, item: any) => acc + (item.cantidad * item.precio), 0) / 1.07)).toFixed(2)} €</span>
+                <span>SUBTOTAL</span>
+                <span>{(meta.items.reduce((acc: number, item: any) => acc + (item.cantidad * item.precio), 0)).toFixed(2)} €</span>
               </div>
               
               {meta.puntos_usados > 0 && (
