@@ -7,13 +7,33 @@ export default async function PagoPage({ params }: { params: { id: string } }) {
   if (isNaN(orderId)) return notFound();
 
   // Obtenemos el pedido usando la clave admin (bypassing RLS)
-  const { data: order } = await supabaseAdmin
-    ?.from('encargos_clientes')
+  if (!supabaseAdmin) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="bg-red-100 text-red-800 p-6 rounded-lg max-w-lg text-center">
+          <h1 className="text-xl font-bold mb-2">Error de Servidor</h1>
+          <p>Falta la variable SUPABASE_SERVICE_ROLE_KEY en Vercel. Contacta con soporte.</p>
+        </div>
+      </div>
+    );
+  }
+
+  const { data: order, error } = await supabaseAdmin
+    .from('encargos_clientes')
     .select('*')
     .eq('id', orderId)
-    .single() || { data: null };
+    .single();
 
-  if (!order) return notFound();
+  if (error || !order) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="bg-red-100 text-red-800 p-6 rounded-lg max-w-lg text-center">
+          <h1 className="text-xl font-bold mb-2">Pedido no encontrado</h1>
+          <p>{error?.message || "No se encontró el ID en la base de datos."}</p>
+        </div>
+      </div>
+    );
+  }
 
   let meta = null;
   const match = (order.notas || '').match(/\[---METADATA---\]([\s\S]*?)\[---\/METADATA---\]/);
@@ -103,3 +123,5 @@ export default async function PagoPage({ params }: { params: { id: string } }) {
     </div>
   );
 }
+
+export const dynamic = 'force-dynamic';
