@@ -23,5 +23,5 @@ const {
 export const createRedirectForm = useSingleInputFormatter(baseCreateRedirectForm, redirectInputFormatter);
 export const processRestNotification = useOutputFormatter(baseProcessRestNotification, restNotificationOutputFormatter);
 
-export const redsysMerchantCode = process.env.REDSYS_MERCHANT_CODE || '';
-export const redsysTerminal = process.env.REDSYS_TERMINAL || '1';
+export const redsysMerchantCode = process.env.REDSYS_MERCHANT_CODE || '154204531';
+export const redsysTerminal = process.env.REDSYS_TERMINAL || '100';

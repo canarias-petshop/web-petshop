@@ -73,52 +73,65 @@ export default async function PagoPage({ params }: { params: Promise<{ id: strin
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
-        <div className="bg-[#D31F3D] py-6 px-8 text-white">
-          <h1 className="text-2xl font-bold">Finalizar Pago</h1>
-          <p className="text-red-100 mt-1">Revisa los detalles finales de tu pedido</p>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-200 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center font-sans">
+      <div className="max-w-xl w-full bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100 transform transition-all">
+        {/* Encabezado */}
+        <div className="bg-gradient-to-r from-[#D31F3D] to-[#b3142f] py-8 px-8 text-white text-center relative overflow-hidden">
+          <div className="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-white opacity-10"></div>
+          <div className="absolute bottom-0 left-0 -ml-8 -mb-8 w-24 h-24 rounded-full bg-white opacity-10"></div>
+          <h1 className="text-3xl font-extrabold tracking-tight relative z-10">Animalarium</h1>
+          <p className="text-red-100 mt-2 text-sm font-medium tracking-wide uppercase relative z-10">Finalizar Pago</p>
         </div>
-        <div className="p-8 text-gray-800">
-          <div className="mb-8">
-            <h2 className="text-lg font-semibold border-b pb-2 mb-4">Resumen del Pedido #{order.id}</h2>
+        
+        <div className="p-8 sm:p-10 text-gray-800">
+          <div className="mb-8 bg-gray-50 p-6 rounded-2xl border border-gray-100">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 border-b border-gray-200 pb-3 flex justify-between items-center">
+              <span>Pedido #{order.id}</span>
+              <span className="bg-[#D31F3D] bg-opacity-10 text-[#D31F3D] py-1 px-3 rounded-full text-xs">Pendiente</span>
+            </h2>
+            
             <div className="space-y-4">
               {meta.items && meta.items.map((item: any, i: number) => (
-                <div key={i} className="flex justify-between items-center text-sm">
-                  <div className="flex-1">
-                    <span className="font-medium text-gray-900">{item.cantidad}x</span> {item.nombre}
+                <div key={i} className="flex justify-between items-start text-sm">
+                  <div className="flex-1 pr-4">
+                    <span className="font-bold text-[#D31F3D] mr-2">{item.cantidad}x</span> 
+                    <span className="font-medium text-gray-700">{item.nombre}</span>
                   </div>
-                  <div className="font-semibold whitespace-nowrap ml-4">
+                  <div className="font-semibold text-gray-900 whitespace-nowrap mt-0.5">
                     {(item.cantidad * item.precio).toFixed(2)} €
                   </div>
                 </div>
               ))}
               
-              <div className="border-t pt-4 space-y-2 text-sm text-gray-600">
-                <div className="flex justify-between">
-                  <span>Subtotal:</span>
-                  <span>{meta.items.reduce((acc: number, item: any) => acc + (item.cantidad * item.precio), 0).toFixed(2)} €</span>
+              <div className="border-t border-gray-200 pt-4 mt-2 space-y-2 text-sm text-gray-500">
+                <div className="flex justify-between items-center">
+                  <span>Subtotal</span>
+                  <span className="font-medium text-gray-700">{meta.items.reduce((acc: number, item: any) => acc + (item.cantidad * item.precio), 0).toFixed(2)} €</span>
                 </div>
                 {meta.puntos_usados > 0 && (
-                  <div className="flex justify-between text-green-600">
-                    <span>Descuento de puntos:</span>
-                    <span>-{meta.puntos_usados.toFixed(2)} €</span>
+                  <div className="flex justify-between items-center text-emerald-600">
+                    <span className="flex items-center"><svg className="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" /></svg>Descuento fidelidad</span>
+                    <span className="font-medium">-{meta.puntos_usados.toFixed(2)} €</span>
                   </div>
                 )}
                 {meta.coste_envio > 0 && (
-                  <div className="flex justify-between">
-                    <span>Gastos de envío:</span>
-                    <span>{meta.coste_envio.toFixed(2)} €</span>
+                  <div className="flex justify-between items-center">
+                    <span>Gastos de envío</span>
+                    <span className="font-medium text-gray-700">{meta.coste_envio.toFixed(2)} €</span>
                   </div>
                 )}
-                <div className="flex justify-between text-lg font-bold text-gray-900 pt-2 border-t mt-2">
-                  <span>Total a Pagar:</span>
-                  <span className="text-[#D31F3D]">{Number(meta.total_final).toFixed(2)} €</span>
-                </div>
+              </div>
+              
+              <div className="flex justify-between items-center pt-6 mt-4 border-t-2 border-dashed border-gray-200">
+                <span className="text-gray-500 font-medium uppercase tracking-wider text-sm">Total a Pagar</span>
+                <span className="text-3xl font-extrabold text-gray-900">{Number(meta.total_final).toFixed(2)} €</span>
               </div>
             </div>
           </div>
-          <PagoForm orderId={order.id} total={Number(meta.total_final).toFixed(2)} />
+          
+          <div className="mt-8">
+            <PagoForm orderId={order.id} total={Number(meta.total_final).toFixed(2)} />
+          </div>
         </div>
       </div>
     </div>

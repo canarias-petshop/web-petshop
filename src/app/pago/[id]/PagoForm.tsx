@@ -45,12 +45,13 @@ export default function PagoForm({ orderId, total }: { orderId: number, total: s
       <button 
         onClick={handlePayCard} 
         disabled={loadingCard}
-        className="w-full bg-[#1A1A1A] hover:bg-black text-white font-bold py-4 px-6 rounded-xl transition-all shadow-md flex items-center justify-center space-x-3 disabled:opacity-70"
+        className="group relative w-full bg-gradient-to-r from-gray-900 to-black hover:from-black hover:to-gray-900 text-white font-bold py-4 px-6 rounded-2xl transition-all duration-300 shadow-xl flex items-center justify-center space-x-3 disabled:opacity-70 disabled:cursor-not-allowed overflow-hidden"
       >
-        <svg xmlns="http://www.w3.org/.svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
         </svg>
-        <span>{loadingCard ? 'Conectando con Redsys...' : 'Pagar de forma Segura (Tarjeta)'}</span>
+        <span className="relative z-10 text-lg tracking-wide">{loadingCard ? 'Conectando con Redsys...' : 'Pagar de forma Segura'}</span>
       </button>
 
       {/* Formulario Oculto Redsys */}
@@ -63,21 +64,21 @@ export default function PagoForm({ orderId, total }: { orderId: number, total: s
       )}
 
       {/* Separador */}
-      <div className="relative py-4 flex items-center">
+      <div className="relative py-6 flex items-center">
         <div className="flex-grow border-t border-gray-200"></div>
-        <span className="flex-shrink-0 mx-4 text-gray-400 text-sm font-medium">O usar</span>
+        <span className="flex-shrink-0 mx-4 text-gray-400 text-xs uppercase tracking-widest font-semibold">O utilizar</span>
         <div className="flex-grow border-t border-gray-200"></div>
       </div>
 
       {/* Botón de Bizum */}
       <button 
         onClick={() => setShowBizum(!showBizum)} 
-        className="w-full bg-[#00C2CB] hover:bg-[#009bA2] text-white font-bold py-3 px-6 rounded-xl transition-all shadow-sm flex items-center justify-center space-x-2"
+        className="group relative w-full bg-white hover:bg-gray-50 border-2 border-[#00C2CB] text-[#00C2CB] font-bold py-4 px-6 rounded-2xl transition-all duration-300 shadow-sm hover:shadow-md flex items-center justify-center space-x-2 overflow-hidden"
       >
-        <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+        <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24">
           <path d="M11 2L2 6l.2 11c1.5 5 8 9 9.8 9.8L12 27l.2-1.2C14 25 20.5 21 22 16l.2-11L11 2zm0 2.2l8.8 3.5-.1 9.5c-1 3.8-6.1 7.2-7.8 8.1-.6-.2-1-.4-1.6-.7-5.5-2.6-7-7-7-8V7.7L11 4.2zM7.5 12a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm9 0a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm-4.5 0a1.5 1.5 0 100 3 1.5 1.5 0 000-3z"/>
         </svg>
-        <span>Pagar Manualmente con Bizum</span>
+        <span className="text-lg tracking-wide">Pagar con Bizum (Manual)</span>
       </button>
 
       {/* Instrucciones Bizum expandibles */}
