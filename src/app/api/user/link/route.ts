@@ -1,4 +1,4 @@
-﻿import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 
 export async function POST(request: Request) {
@@ -21,8 +21,8 @@ export async function POST(request: Request) {
       .limit(1)
       .single();
 
-    if (existingClient && !existingClient.auth_user_id) {
-      // Vincularlo
+    if (existingClient) {
+      // Vincularlo o actualizar el auth_user_id si la cuenta fue recreada
       await supabaseAdmin
         .from('clientes')
         .update({ auth_user_id: auth_user_id })
