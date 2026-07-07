@@ -15,6 +15,7 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [successTotal, setSuccessTotal] = useState(0);
   const [esPrimeraCompra, setEsPrimeraCompra] = useState(false);
   const [showWeekendWarning, setShowWeekendWarning] = useState(false);
 
@@ -159,6 +160,7 @@ export default function CheckoutPage() {
         throw new Error(errData.error || 'Error al procesar el pedido');
       }
       
+      setSuccessTotal(finalTotal);
       setSuccess(true);
       clearCart();
       
@@ -196,7 +198,7 @@ export default function CheckoutPage() {
           <div style={{ backgroundColor: '#eff6ff', border: '1px solid #bfdbfe', padding: '1.5rem', borderRadius: 'var(--radius)', marginBottom: '2rem', maxWidth: '500px' }}>
             <h3 style={{ color: '#1e40af', fontWeight: 'bold', marginBottom: '0.5rem' }}>Pago con Tarjeta</h3>
             <p style={{ color: '#1d4ed8' }}>
-              Nos pondremos en contacto contigo por WhatsApp para confirmar tu pedido y te enviaremos un <strong>enlace de pago 100% seguro</strong> por valor de <strong>{finalTotal.toFixed(2)}€</strong>.
+              Nos pondremos en contacto contigo por WhatsApp para confirmar tu pedido y te enviaremos un <strong>enlace de pago 100% seguro</strong> por valor de <strong>{successTotal.toFixed(2)}€</strong>.
             </p>
           </div>
         )}
