@@ -50,7 +50,7 @@ export async function POST(request: Request) {
     // Además le añadimos un timestamp corto para evitar duplicados si el cliente reintenta el pago.
     const orderNumberStr = order.id.toString().padStart(4, '0') + Date.now().toString().slice(-6);
 
-    const domain = process.env.NEXT_PUBLIC_BASE_URL || 'https://animalariumtenerife.es';
+    const domain = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.animalariumtenerife.es';
     const merchantURL = `${domain}/api/webhook/redsys`; 
     const urlOK = `${domain}/ticket/${order.id}?status=success`;
     const urlKO = `${domain}/pago/${order.id}?status=error`;
