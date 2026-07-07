@@ -2,8 +2,9 @@ import { supabaseAdmin } from '@/lib/supabase';
 import { notFound } from 'next/navigation';
 import PagoForm from './PagoForm';
 
-export default async function PagoPage({ params }: { params: { id: string } }) {
-  const orderId = parseInt(params.id, 10);
+export default async function PagoPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const orderId = parseInt(id, 10);
   if (isNaN(orderId)) return notFound();
 
   // Obtenemos el pedido usando la clave admin (bypassing RLS)

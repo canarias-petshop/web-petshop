@@ -2,8 +2,10 @@ import { supabaseAdmin } from '@/lib/supabase';
 import { notFound } from 'next/navigation';
 import PrintButton from './PrintButton';
 
-export default async function TicketPage({ params, searchParams }: { params: { id: string }, searchParams: { status?: string } }) {
-  const orderId = parseInt(params.id, 10);
+export default async function TicketPage({ params, searchParams }: { params: Promise<{ id: string }>, searchParams: Promise<{ status?: string }> }) {
+  const { id } = await params;
+  const resolvedSearchParams = await searchParams;
+  const orderId = parseInt(id, 10);
   if (isNaN(orderId)) return notFound();
 
   // Obtenemos el pedido usando la clave admin (bypassing RLS)
@@ -24,7 +26,7 @@ export default async function TicketPage({ params, searchParams }: { params: { i
   if (!meta) return notFound();
 
   // Detectamos si viene de Redsys con status=success
-  const isNewPayment = searchParams.status === 'success';
+  const isNewPayment = resolvedSearchParams.status === 'success';
 
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-4 sm:px-6 lg:px-8 print:bg-white print:py-0">
