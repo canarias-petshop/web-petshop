@@ -24,7 +24,11 @@ export default function MiCuentaPage() {
         setUser(user);
 
         // Fetch client data bypassing RLS using API
-        const profileRes = await fetch('/api/user/profile');
+        const profileRes = await fetch('/api/user/profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ auth_user_id: user.id })
+        });
         let clientDataResult = null;
         if (profileRes.ok) {
           const profileJson = await profileRes.json();
@@ -41,7 +45,11 @@ export default function MiCuentaPage() {
               if (linkRes.ok) {
                 const linkData = await linkRes.json();
                 if (linkData.linked) {
-                  const retryRes = await fetch('/api/user/profile');
+                  const retryRes = await fetch('/api/user/profile', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ auth_user_id: user.id })
+                  });
                   if (retryRes.ok) {
                     const retryJson = await retryRes.json();
                     clientDataResult = retryJson.clientData;

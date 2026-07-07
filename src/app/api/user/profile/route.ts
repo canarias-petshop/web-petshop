@@ -1,24 +1,23 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
 
-export async function GET(request: Request) {
+export async function POST(request: Request) {
   try {
-    const supabase = createRouteHandlerClient({ cookies });
-    const { data: { session } } = await supabase.auth.getSession();
+    const { auth_user_id } = await request.json();
     
-    if (!session) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+    if (!auth_user_id) {
+      return NextResponse.json({ error: 'Faltan datos' }, { status: 400 });
     }
     
-    const user = session.user;
+    if (!supabaseAdmin) {
+      return NextResponse.json({ error: 'Error de configuración del servidor' }, { status: 500 });
+    }
     
     // Fetch bypassing RLS
     const { data: clientData, error } = await supabaseAdmin
       .from('clientes')
       .select('*, mascotas(*, citas(*))')
-      .eq('auth_user_id', user.id)
+      .eq('auth_user_id', auth_user_id)
       .single();
       
     if (error && error.code !== 'PGRST116') {
