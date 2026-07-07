@@ -23,40 +23,35 @@ export default function MiCuentaPage() {
 
         setUser(user);
 
-        // Fetch client data, pets, and their appointments using supabase
-        const { data: clientData, error: clientError } = await supabase
-          .from("clientes")
-          .select("*, mascotas(*, citas(*))")
-          .or(`auth_user_id.eq.${user.id},email.eq.${user.email}`)
-          .single();
-
-        let clientDataResult = clientData;
-        
-        if (clientError && clientError.code !== 'PGRST116') {
-          console.error("Error fetching client data:", clientError);
-        } else if (!clientDataResult && user.email) {
-          // Si no se encontró por auth_user_id ni por email con RLS,
-          // llamamos a la API que usa supabaseAdmin para intentar vincularlo.
-          try {
-            const linkRes = await fetch('/api/user/link', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ email: user.email, auth_user_id: user.id })
-            });
-            const linkData = await linkRes.json();
-            
-            if (linkData.success && linkData.linked) {
-              // Si se vinculó con éxito, reintentamos la consulta
-              const { data: retryData } = await supabase
-                .from("clientes")
-                .select("*, mascotas(*, citas(*))")
-                .eq("auth_user_id", user.id)
-                .single();
-              clientDataResult = retryData;
+        // Fetch client data bypassing RLS using API
+        const profileRes = await fetch('/api/user/profile');
+        let clientDataResult = null;
+        if (profileRes.ok) {
+          const profileJson = await profileRes.json();
+          clientDataResult = profileJson.clientData;
+          
+          if (!clientDataResult && user.email) {
+            // Si no se encontró por auth_user_id, llamamos al linker
+            try {
+              const linkRes = await fetch('/api/user/link', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: user.email, auth_user_id: user.id })
+              });
+              if (linkRes.ok) {
+                const linkData = await linkRes.json();
+                if (linkData.linked) {
+                  const retryRes = await fetch('/api/user/profile');
+                  if (retryRes.ok) {
+                    const retryJson = await retryRes.json();
+                    clientDataResult = retryJson.clientData;
+                  }
+                }
+              }
+            } catch (err) {
+              console.error("Error en auto-link:", err);
             }
-          } catch (e) {
-            console.error("Error trying to auto-link account:", e);
-          }
+          }  
         }
         
         if (clientDataResult) {

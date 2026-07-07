@@ -124,9 +124,12 @@ export async function POST(request: Request) {
       detalle_pedido: detalle_pedido,
       notas: notasConMetadatos,
       estado: 'Recibido',
-      origen: 'Web',
-      auth_user_id: auth_user_id || null
+      origen: 'Web'
     });
+
+    if (error) {
+      throw new Error(`Error insertando encargo: ${error.message}`);
+    }
 
     return NextResponse.json({ success: true });
   } catch (err: any) {
