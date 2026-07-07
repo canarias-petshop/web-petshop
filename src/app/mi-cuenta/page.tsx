@@ -58,8 +58,8 @@ export default function MiCuentaPage() {
           setClienteData(clientDataResult);
           
           // Fetch user orders (pedidos)
-          if (clientData.telefono || user.user_metadata?.telefono) {
-            const tel = clientData.telefono || user.user_metadata?.telefono;
+          if (clientDataResult.telefono || user.user_metadata?.telefono) {
+            const tel = clientDataResult.telefono || user.user_metadata?.telefono;
             const { data: pedidosData } = await supabase
               .from("encargos_clientes")
               .select("*")
