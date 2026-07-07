@@ -27,7 +27,7 @@ export default function MiCuentaPage() {
         const { data: clientData, error: clientError } = await supabase
           .from("clientes")
           .select("*, mascotas(*, citas(*))")
-          .eq("auth_user_id", user.id)
+          .or(`auth_user_id.eq.${user.id},email.eq.${user.email}`)
           .single();
 
         if (clientError && clientError.code !== 'PGRST116') {
