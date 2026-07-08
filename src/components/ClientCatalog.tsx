@@ -21,6 +21,7 @@ export type Product = {
   sku?: string;
   caracteristicas?: string;
   categoria_web?: string;
+  subcategoria_web?: string;
 };
 
 // Componente reutilizable para renderizar cada bloque de checkboxes (Acordeón)
@@ -200,9 +201,10 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
           marcaFormateada = 'ATLANTIC PET';
         }
         
-        let catFinal = p.subcategoria || p.familia || 'Otros';
+        let catFinal = p.familia || 'Otros';
+        let subcatFinal = p.subcategoria || '';
 
-        return { ...p, marca: marcaFormateada, categoria_web: catFinal };
+        return { ...p, marca: marcaFormateada, categoria_web: catFinal, subcategoria_web: subcatFinal };
       });
   }, [productos]);
 
@@ -210,6 +212,7 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
   const [selectedMarcaSubs, setSelectedMarcaSubs] = useState<Record<string, string[]>>({});
   const [selectedGamas, setSelectedGamas] = useState<string[]>([]);
   const [selectedCategorias, setSelectedCategorias] = useState<string[]>(initialCat ? [initialCat] : []);
+  const [selectedSubcategorias, setSelectedSubcategorias] = useState<string[]>([]);
   const [selectedMascotas, setSelectedMascotas] = useState<string[]>([]);
   const [selectedEdades, setSelectedEdades] = useState<string[]>([]);
   const [selectedTamanos, setSelectedTamanos] = useState<string[]>([]);
@@ -219,6 +222,7 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
   const [sortBy, setSortBy] = useState<string>('alfabetico');
   
   const categorias = useMemo(() => (Array.from(new Set(productosFormateados.map(p => p.categoria_web).filter(Boolean))) as string[]).sort(), [productosFormateados]);
+  const subcategorias = useMemo(() => (Array.from(new Set(productosFormateados.map(p => p.subcategoria_web).filter(Boolean))) as string[]).sort(), [productosFormateados]);
   const mascotas = useMemo(() => (Array.from(new Set(productosFormateados.map(p => p.mascota).filter(Boolean))) as string[]).sort(), [productosFormateados]);
   const edades = useMemo(() => (Array.from(new Set(productosFormateados.map(p => p.edad).filter(Boolean))) as string[]).sort(), [productosFormateados]);
   const tamanos = useMemo(() => (Array.from(new Set(productosFormateados.map(p => p.tamano).filter(Boolean))) as string[]).sort(), [productosFormateados]);
@@ -239,6 +243,7 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
       };
 
       if (skipCategory !== 'categoria' && !matchInArray(selectedCategorias, p.categoria_web)) return false;
+      if (skipCategory !== 'subcategoria' && !matchInArray(selectedSubcategorias, p.subcategoria_web)) return false;
       if (skipCategory !== 'mascota' && !matchInArray(selectedMascotas, p.mascota)) return false;
       if (skipCategory !== 'edad' && !matchInArray(selectedEdades, p.edad)) return false;
       if (skipCategory !== 'tamano' && !matchInArray(selectedTamanos, p.tamano)) return false;
@@ -328,7 +333,7 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
       if (sortBy === 'sabor') return (a.sabor_principal || '').localeCompare(b.sabor_principal || '');
       return (a.nombre || '').localeCompare(b.nombre || '');
     });
-  }, [productosFormateados, selectedMarcas, selectedMarcaSubs, selectedCategorias, selectedMascotas, selectedEdades, selectedTamanos, selectedNecesidades, selectedSabores, sortBy, searchQuery]);
+  }, [productosFormateados, selectedMarcas, selectedMarcaSubs, selectedCategorias, selectedSubcategorias, selectedMascotas, selectedEdades, selectedTamanos, selectedNecesidades, selectedSabores, sortBy, searchQuery]);
 
   if (productosFormateados.length === 0) {
     return (
@@ -358,7 +363,7 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <button 
               onClick={() => {
-                setSelectedMarcas([]); setSelectedMarcaSubs({}); setSelectedGamas([]); setSelectedCategorias([]); setSelectedMascotas([]);
+                setSelectedMarcas([]); setSelectedMarcaSubs({}); setSelectedGamas([]); setSelectedCategorias([]); setSelectedSubcategorias([]); setSelectedMascotas([]);
                 setSelectedEdades([]); setSelectedTamanos([]); setSelectedNecesidades([]); setSelectedSabores([]); setSearchQuery('');
               }}
               style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', fontSize: '0.8rem', textDecoration: 'underline' }}
@@ -373,6 +378,7 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
         
         <FilterSection title="Mascota" options={mascotas} state={selectedMascotas} setter={setSelectedMascotas} onToggle={toggle} counts={countsMascota} defaultExpanded={true} />
         <FilterSection title="Categoría" options={categorias} state={selectedCategorias} setter={setSelectedCategorias} onToggle={toggle} counts={countsCategoria} defaultExpanded={true} />
+        <FilterSection title="Subcategoría" options={subcategorias} state={selectedSubcategorias} setter={setSelectedSubcategorias} onToggle={toggle} counts={countsSubcategoria} defaultExpanded={true} />
         <FilterSection title="Edad" options={edades} state={selectedEdades} setter={setSelectedEdades} onToggle={toggle} counts={countsEdad} />
         <FilterSection title="Tamaño" options={tamanos} state={selectedTamanos} setter={setSelectedTamanos} onToggle={toggle} counts={countsTamano} />
         <FilterSection title="Necesidad Especial" options={necesidades} state={selectedNecesidades} setter={setSelectedNecesidades} onToggle={toggle} counts={countsNecesidad} />
