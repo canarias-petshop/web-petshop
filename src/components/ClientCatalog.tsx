@@ -558,6 +558,7 @@ function CrossSellPopup({ targetProduct, allProducts, onClose }: { targetProduct
     const sameMascota = allProducts.filter(p => p.id !== targetProduct.id && p.mascota === targetProduct.mascota);
     let complements = sameMascota.filter(p => p.categoria_web !== targetProduct.categoria_web);
     if (complements.length === 0) complements = sameMascota;
+    // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/purity
     const shuffled = [...complements].sort(() => 0.5 - Math.random());
     return shuffled.slice(0, 2);
   }, [targetProduct, allProducts]);

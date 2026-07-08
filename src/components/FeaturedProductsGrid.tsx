@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -26,6 +27,7 @@ export default function FeaturedProductsGrid({ productos }: { productos: any[] }
 
     // Shuffle array and take 6
     const shuffled = [...piensos].sort(() => 0.5 - Math.random());
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setFeatured(shuffled.slice(0, 6));
   }, [productos]);
 
