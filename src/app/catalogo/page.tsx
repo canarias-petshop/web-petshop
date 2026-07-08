@@ -1,6 +1,8 @@
 import { supabaseAdmin } from '@/lib/supabase';
 import ClientCatalog from '@/components/ClientCatalog';
 import PromoBanner from '@/components/PromoBanner';
+import fs from 'fs';
+import path from 'path';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,6 +20,20 @@ export default async function CatalogoPage() {
     console.error("Error fetching products:", error);
   }
 
+  let skusWithImages = new Set<string>();
+  try {
+    const imagesDir = path.join(process.cwd(), 'public', 'images', 'productos');
+    if (fs.existsSync(imagesDir)) {
+      const imageFiles = fs.readdirSync(imagesDir);
+      skusWithImages = new Set(imageFiles.filter(f => f.endsWith('.jpg')).map(f => f.replace('.jpg', '')));
+    }
+  } catch (e) {
+    console.error("Error reading images dir:", e);
+  }
+
+  const validProductos = (productos || []).filter(p => p.sku && skusWithImages.has(p.sku));
+
+
   return (
     <div>
       <PromoBanner />
@@ -27,7 +43,7 @@ export default async function CatalogoPage() {
         <p style={{ color: 'var(--text-muted)' }}>Encuentra la mejor alimentación natural para tu mascota.</p>
       </div>
       <section className="container" id="catalogo">
-        <ClientCatalog productos={(productos || []).filter(p => p.marca !== 'Genérico' && p.marca !== 'Generico' && p.marca !== 'Servicio')} />
+        <ClientCatalog productos={validProductos.filter(p => p.marca !== 'Genérico' && p.marca !== 'Generico' && p.marca !== 'Servicio')} />
       </section>
       </div>
     </div>

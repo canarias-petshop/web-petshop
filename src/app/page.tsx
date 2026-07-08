@@ -3,6 +3,8 @@ import PromoBanner from '@/components/PromoBanner';
 import { supabaseAdmin } from '@/lib/supabase';
 import FloatingProductWidget from '@/components/FloatingProductWidget';
 import FeaturedProductsGrid from '@/components/FeaturedProductsGrid';
+import fs from 'fs';
+import path from 'path';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,6 +19,20 @@ export default async function Home() {
   if (error) {
     console.error("Error fetching products for Home:", error);
   }
+
+  let skusWithImages = new Set<string>();
+  try {
+    const imagesDir = path.join(process.cwd(), 'public', 'images', 'productos');
+    if (fs.existsSync(imagesDir)) {
+      const imageFiles = fs.readdirSync(imagesDir);
+      skusWithImages = new Set(imageFiles.filter(f => f.endsWith('.jpg')).map(f => f.replace('.jpg', '')));
+    }
+  } catch (e) {
+    console.error("Error reading images dir:", e);
+  }
+
+  const validProductos = (productos || []).filter(p => p.sku && skusWithImages.has(p.sku));
+
 
   return (
     <div>
