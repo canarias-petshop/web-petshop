@@ -273,6 +273,7 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
       return true;
     }).reduce((acc, p) => {
       if (skipCategory === 'categoria' && p.categoria_web) acc[p.categoria_web] = (acc[p.categoria_web] || 0) + 1;
+        if (skipCategory === 'subcategoria' && p.subcategoria_web) acc[p.subcategoria_web] = (acc[p.subcategoria_web] || 0) + 1;
       if (skipCategory === 'mascota' && p.mascota) acc[p.mascota] = (acc[p.mascota] || 0) + 1;
       if (skipCategory === 'edad' && p.edad) acc[p.edad] = (acc[p.edad] || 0) + 1;
       if (skipCategory === 'tamano' && p.tamano) acc[p.tamano] = (acc[p.tamano] || 0) + 1;
@@ -305,6 +306,7 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
       };
 
       if (!matchInArray(selectedCategorias, p.categoria_web)) return false;
+      if (!matchInArray(selectedSubcategorias, p.subcategoria_web)) return false;
       if (!matchInArray(selectedMascotas, p.mascota)) return false;
       if (!matchInArray(selectedEdades, p.edad)) return false;
       if (!matchInArray(selectedTamanos, p.tamano)) return false;
