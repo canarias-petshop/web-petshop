@@ -68,14 +68,22 @@ export default function MiCuentaPage() {
           // Fetch user orders (pedidos)
           if (clientDataResult.telefono || user.user_metadata?.telefono) {
             const tel = clientDataResult.telefono || user.user_metadata?.telefono;
-            const { data: pedidosData } = await supabase
-              .from("encargos_clientes")
-              .select("*")
-              .eq("telefono", tel)
-              .order("created_at", { ascending: false });
+            
+            try {
+              const pedidosRes = await fetch('/api/user/pedidos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ telefono: tel })
+              });
               
-            if (pedidosData) {
-              setPedidos(pedidosData);
+              if (pedidosRes.ok) {
+                const pedidosJson = await pedidosRes.json();
+                if (pedidosJson.pedidos) {
+                  setPedidos(pedidosJson.pedidos);
+                }
+              }
+            } catch (err) {
+              console.error("Error fetching pedidos:", err);
             }
           }
         }
