@@ -193,37 +193,17 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
   const productosFormateados = useMemo(() => {
     return productos
       .filter(p => p.marca !== 'Genérico' && p.marca !== 'Generico' && p.marca !== 'Servicio')
+      .filter(p => p.familia === 'Alimentación' || p.familia === 'Alimentacion')
       .map(p => {
         let marcaFormateada = p.marca;
         if (marcaFormateada && marcaFormateada.toLowerCase() === 'atlantic pet') {
           marcaFormateada = 'ATLANTIC PET';
         }
         
-        let subcatFormateada = p.subcategoria;
-        const lowerSubcat = (subcatFormateada || '').toLowerCase();
-        
-        if (lowerSubcat.includes('pienso seco') || lowerSubcat.includes('alimento seco') || lowerSubcat.includes('alimentación seca')) {
-          subcatFormateada = 'Alimentación seca';
-        } else if (lowerSubcat.includes('húmedo') || lowerSubcat.includes('humedo') || lowerSubcat.includes('pouch') || lowerSubcat.includes('lata')) {
-          subcatFormateada = 'Alimentación húmeda';
-        } else if (lowerSubcat.includes('snack')) {
-          subcatFormateada = 'Snack';
-        }
-        
-        let catFinal = subcatFormateada || p.familia || 'Otros';
-        const lowerCat = (catFinal).toLowerCase();
-        
-        if (lowerCat.includes('pienso seco') || lowerCat.includes('alimento seco') || lowerCat.includes('alimentación seca')) {
-          catFinal = 'Alimentación seca';
-        } else if (lowerCat.includes('húmedo') || lowerCat.includes('humedo') || lowerCat.includes('pouch') || lowerCat.includes('lata')) {
-          catFinal = 'Alimentación húmeda';
-        } else if (lowerCat.includes('snack')) {
-          catFinal = 'Snack';
-        }
+        let catFinal = p.subcategoria || p.familia || 'Otros';
 
         return { ...p, marca: marcaFormateada, categoria_web: catFinal };
-      })
-      .filter(p => p.categoria_web === 'Alimentación seca' || p.categoria_web === 'Alimentación húmeda' || p.categoria_web === 'Snack');
+      });
   }, [productos]);
 
   const [selectedMarcas, setSelectedMarcas] = useState<string[]>([]);
