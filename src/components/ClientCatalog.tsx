@@ -194,7 +194,7 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
   const productosFormateados = useMemo(() => {
     return productos
       .filter(p => p.marca !== 'Genérico' && p.marca !== 'Generico' && p.marca !== 'Servicio')
-      .filter(p => p.familia === 'Alimentación' || p.familia === 'Alimentacion')
+      .filter(p => (p.familia === 'Alimentación' || p.familia === 'Alimentacion') && p.imagen_url && p.imagen_url.trim() !== '')
       .map(p => {
         let marcaFormateada = p.marca;
         if (marcaFormateada && marcaFormateada.toLowerCase() === 'atlantic pet') {
@@ -286,6 +286,7 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
   };
 
   const countsCategoria = useMemo(() => getCounts('categoria'), [productosFormateados, selectedMarcas, selectedMarcaSubs, selectedCategorias, selectedMascotas, selectedEdades, selectedTamanos, selectedNecesidades, selectedSabores, searchQuery]);
+    const countsSubcategoria = useMemo(() => getCounts('subcategoria'), [productosFormateados, selectedMarcas, selectedMarcaSubs, selectedCategorias, selectedMascotas, selectedEdades, selectedTamanos, selectedNecesidades, selectedSabores, searchQuery]);
   const countsMascota = useMemo(() => getCounts('mascota'), [productosFormateados, selectedMarcas, selectedMarcaSubs, selectedCategorias, selectedMascotas, selectedEdades, selectedTamanos, selectedNecesidades, selectedSabores, searchQuery]);
   const countsEdad = useMemo(() => getCounts('edad'), [productosFormateados, selectedMarcas, selectedMarcaSubs, selectedCategorias, selectedMascotas, selectedEdades, selectedTamanos, selectedNecesidades, selectedSabores, searchQuery]);
   const countsTamano = useMemo(() => getCounts('tamano'), [productosFormateados, selectedMarcas, selectedMarcaSubs, selectedCategorias, selectedMascotas, selectedEdades, selectedTamanos, selectedNecesidades, selectedSabores, searchQuery]);
