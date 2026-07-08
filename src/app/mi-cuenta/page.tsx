@@ -11,6 +11,9 @@ export default function MiCuentaPage() {
   const [user, setUser] = useState<any>(null);
   const [clienteData, setClienteData] = useState<any>(null);
   const [pedidos, setPedidos] = useState<any[]>([]);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editForm, setEditForm] = useState({ telefono: '', nombre_dueno: '', direccion: '' });
+  const [saveLoading, setSaveLoading] = useState(false);
 
   useEffect(() => {
     async function fetchUserData() {
@@ -96,6 +99,34 @@ export default function MiCuentaPage() {
 
     fetchUserData();
   }, [router]);
+
+  
+  async function handleSaveProfile() {
+    setSaveLoading(true);
+    try {
+      const res = await fetch('/api/user/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          auth_user_id: user.id,
+          telefono: editForm.telefono,
+          nombre_dueno: editForm.nombre_dueno,
+          direccion: editForm.direccion
+        })
+      });
+      if (res.ok) {
+        const { clientData } = await res.json();
+        setClienteData(clientData);
+        setIsEditing(false);
+      } else {
+        alert("Error guardando el perfil.");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Error de conexión.");
+    }
+    setSaveLoading(false);
+  }
 
   const handleLogout = async () => {
     await supabase.auth.signOut();

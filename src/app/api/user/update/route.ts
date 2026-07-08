@@ -3,34 +3,37 @@ import { supabaseAdmin } from '@/lib/supabase';
 
 export async function POST(request: Request) {
   try {
-    const { auth_user_id } = await request.json();
-    
+    const { auth_user_id, telefono, nombre_dueno, direccion } = await request.json();
+
     if (!auth_user_id) {
       return NextResponse.json({ error: 'Faltan datos' }, { status: 400 });
     }
-    
+
     if (!supabaseAdmin) {
       return NextResponse.json({ error: 'Error de configuración del servidor' }, { status: 500 });
     }
-    
-    // Fetch bypassing RLS
-    const { data: clients, error } = await supabaseAdmin
+
+    // Actualizamos el perfil saltándonos el RLS (ya que el usuario autenticado está pidiéndolo)
+    const { data, error } = await supabaseAdmin
       .from('clientes')
-      .select('*, mascotas(*, citas(*))')
+      .update({
+        telefono: telefono || null,
+        nombre_dueno: nombre_dueno || null,
+        direccion: direccion || null
+      })
       .eq('auth_user_id', auth_user_id)
-      .order('created_at', { ascending: false })
-      .limit(1);
-      
-    if (error && error.code !== 'PGRST116') {
-      console.error('Error fetching client bypass RLS:', error);
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error updating profile:', error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
-    
-    const clientData = clients && clients.length > 0 ? clients[0] : null;
-    return NextResponse.json({ clientData });
+
+    return NextResponse.json({ success: true, clientData: data });
+
   } catch (error: any) {
-    console.error('Profile API Error:', error);
+    console.error('Update Profile API Error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
-

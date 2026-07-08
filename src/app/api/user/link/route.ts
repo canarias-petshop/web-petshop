@@ -22,7 +22,14 @@ export async function POST(request: Request) {
       .single();
 
     if (existingClient) {
-      // Vincularlo o actualizar el auth_user_id si la cuenta fue recreada
+      // 1. Limpiar auth_user_id de cualquier otra ficha que lo tuviera (para evitar el crash de múltiples fichas)
+      await supabaseAdmin
+        .from('clientes')
+        .update({ auth_user_id: null })
+        .eq('auth_user_id', auth_user_id)
+        .neq('id', existingClient.id);
+
+      // 2. Vincularlo o actualizar el auth_user_id si la cuenta fue recreada
       await supabaseAdmin
         .from('clientes')
         .update({ auth_user_id: auth_user_id })
