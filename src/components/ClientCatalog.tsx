@@ -19,6 +19,8 @@ export type Product = {
   sabor_principal?: string;
   precio_pvp?: string | number;
   sku?: string;
+  imagen_url?: string;
+  en_web?: boolean;
   caracteristicas?: string;
   categoria_web?: string;
   subcategoria_web?: string;
