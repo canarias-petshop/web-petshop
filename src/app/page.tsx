@@ -31,7 +31,14 @@ export default async function Home() {
     console.error("Error reading images dir:", e);
   }
 
-  const validProductos = (productos || []).filter(p => p.sku && skusWithImages.has(p.sku));
+  const validProductos = (productos || [])
+    .filter(p => p.sku && skusWithImages.has(p.sku))
+    .filter(p => p.marca !== 'Genérico' && p.marca !== 'Generico' && p.marca !== 'Servicio')
+    .filter(p => 
+      p.familia === 'Alimentación' || 
+      p.familia === 'Alimentacion' || 
+      (p.familia && p.familia.toLowerCase().includes('snack'))
+    );
 
 
   return (
@@ -75,7 +82,7 @@ export default async function Home() {
           </div>
         </div>
         
-        <FeaturedProductsGrid productos={productos || []} />
+        <FeaturedProductsGrid productos={validProductos} />
       </section>
 
       <section className="container" style={{ paddingTop: '3rem', paddingBottom: '2rem' }}>
@@ -128,7 +135,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <FloatingProductWidget productos={productos || []} />
+      <FloatingProductWidget productos={validProductos} />
     </div>
   );
 }

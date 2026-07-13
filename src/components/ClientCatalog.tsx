@@ -196,7 +196,11 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
   const productosFormateados = useMemo(() => {
     return productos
       .filter(p => p.marca !== 'Genérico' && p.marca !== 'Generico' && p.marca !== 'Servicio')
-      .filter(p => (p.familia === 'Alimentación' || p.familia === 'Alimentacion'))
+      .filter(p => (
+        p.familia === 'Alimentación' || 
+        p.familia === 'Alimentacion' || 
+        (p.familia && p.familia.toLowerCase().includes('snack'))
+      ))
       .map(p => {
         let marcaFormateada = p.marca;
         if (marcaFormateada && marcaFormateada.toLowerCase() === 'atlantic pet') {
