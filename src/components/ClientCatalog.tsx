@@ -24,6 +24,7 @@ export type Product = {
   caracteristicas?: string;
   categoria_web?: string;
   subcategoria_web?: string;
+  composicion?: string;
 };
 
 // Componente reutilizable para renderizar cada bloque de checkboxes (Acordeón)
@@ -176,9 +177,10 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
   
   // Cross-sell states
-  const [crossSellTarget, setCrossSellTarget] = useState<Product | null>(null);
-  const [showCrossSell, setShowCrossSell] = useState(false);
-  const hoverTimerRef = useRef<NodeJS.Timeout | null>(null);
+    const [crossSellTarget, setCrossSellTarget] = useState<Product | null>(null);
+    const [showCrossSell, setShowCrossSell] = useState(false);
+    const [compositionTarget, setCompositionTarget] = useState<Product | null>(null);
+    const hoverTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (searchParams) {
@@ -525,6 +527,17 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
                       </div>
                     </div>
                     
+                    {prod.composicion && (
+                      <button 
+                        onClick={(e) => { e.preventDefault(); setCompositionTarget(prod); }}
+                        style={{ marginTop: '0.5rem', background: 'rgba(var(--primary-rgb), 0.05)', border: '1px solid var(--primary)', color: 'var(--primary)', padding: '6px 8px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', transition: 'all 0.2s' }}
+                        onMouseOver={(e) => { e.currentTarget.style.background = 'var(--primary)'; e.currentTarget.style.color = 'white'; }}
+                        onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(var(--primary-rgb), 0.05)'; e.currentTarget.style.color = 'var(--primary)'; }}
+                      >
+                        ℹ️ Ver Composición
+                      </button>
+                    )}
+
                     <div style={{ marginTop: '0.5rem' }}>
                       <AddToCartBtn product={{...prod, precio: finalPrice, precio_pvp: finalPrice}} />
                     </div>
@@ -544,6 +557,36 @@ export default function ClientCatalog({ productos }: { productos: Product[] }) {
           onClose={() => { setShowCrossSell(false); setCrossSellTarget(null); }} 
         />
       )}
+
+      {compositionTarget && (
+        <CompositionModal 
+          product={compositionTarget} 
+          onClose={() => setCompositionTarget(null)} 
+        />
+      )}
+    </div>
+  );
+}
+
+function CompositionModal({ product, onClose }: { product: Product, onClose: () => void }) {
+  if (!product) return null;
+  return (
+    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '1rem', backdropFilter: 'blur(3px)' }} onClick={onClose}>
+      <div style={{ backgroundColor: 'var(--surface)', borderRadius: '12px', padding: '2rem', maxWidth: '600px', width: '100%', maxHeight: '85vh', overflowY: 'auto', position: 'relative', boxShadow: '0 10px 25px rgba(0,0,0,0.2)' }} onClick={e => e.stopPropagation()}>
+        <button onClick={onClose} style={{ position: 'absolute', top: '15px', right: '15px', background: 'var(--surface-hover)', border: 'none', cursor: 'pointer', color: 'var(--text)', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <X size={20} />
+        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid var(--surface-hover)' }}>
+          {product.sku && (
+             <div style={{ width: '60px', height: '60px', flexShrink: 0, backgroundImage: `url("/images/productos/${encodeURIComponent(product.sku)}.jpg")`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat', backgroundPosition: 'center', borderRadius: '8px' }} />
+          )}
+          <div>
+            <h3 style={{ margin: 0, color: 'var(--primary)', fontSize: '1.2rem', lineHeight: '1.2' }}>{product.nombre}</h3>
+            {product.marca && <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{product.marca}</span>}
+          </div>
+        </div>
+        <div style={{ fontSize: '0.95rem', lineHeight: '1.6' }} dangerouslySetInnerHTML={{ __html: product.composicion || 'Información no disponible.' }} />
+      </div>
     </div>
   );
 }
